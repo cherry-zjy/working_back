@@ -26,19 +26,19 @@
     </div>
     <!-- body -->
     <el-container>
-      <aside style="background-color: #16181D;">
+      <aside style="background-color: #FAF5F5;">
         <div style="text-align:center">
           <img v-if="!iscloseNav" src="../../static/images/open_nav.png" style="width:30px;height:30px;margin:5px 10px;" alt="" @click="closeNav()">
           <img v-else src="../../static/images/close_nav.png" style="width:30px;height:30px;margin:5px 10px;" alt="" @click="closeNav()">
         </div>
-        <el-menu style="background-color: #16181D;" class="el-menu-vertical-demo" :default-active="$route.path" router :unique-opened='true'
+        <el-menu style="background-color: #FAF5F5;" class="el-menu-vertical-demo" :default-active="$route.path" router :unique-opened='true'
           @select="handleSelect" :collapse='iscloseNav'>
           <template v-for="(item,index) in menuList">
             <el-submenu :index="index+''" :key="index">
               <template slot="title">
                 <img src="../../static/images/menu_list.png" v-if="!iscloseNav" alt="">
                 <i v-else class="el-icon-menu"></i>
-                <span slot="title" style="color:#b3c0d1">{{item.name}}</span>
+                <span slot="title" style="color:#000">{{item.name}}</span>
               </template>
               <el-menu-item v-for="(ll,ii) in item.snippet" :key="ii" :index="'/'+ll.urlf.split('.')[0]">{{ll.title}}</el-menu-item>
             </el-submenu>
@@ -63,7 +63,49 @@
     data: function () {
       return {
         defaultActiveIndex: ["0"],
-        menuList: [],
+        menuList: [{
+        "name": "人员管理",
+          "snippet": [{
+            "title": "管理员管理",
+            "urlf": "manage.html",
+          }]
+        }, {
+          "name": "打工管理",
+          "snippet": [{
+            "title": "企业列表",
+            "urlf": "company.html",
+          }, {
+            "title": "门店列表",
+            "urlf": "store.html",
+          }, {
+            "title": "报名列表",
+            "urlf": "enter.html",
+          }]
+        }, {
+          "name": "用户管理",
+          "snippet": [{
+            "title": "普通用户列表",
+            "urlf": "user.html",
+          }, {
+            "title": "经理人列表",
+            "urlf": "agent.html",
+          }]
+        }, {
+          "name": "提现管理",
+          "snippet": [{
+            "title": "提现列表",
+            "urlf": "withdraw.html",
+          }]
+        },{
+          "name": "平台管理",
+          "snippet": [{
+            "title": "banner列表",
+            "urlf": "banner.html",
+          },{
+            "title": "意见反馈列表",
+            "urlf": "feedback.html",
+          }]
+        },],
         userName: "",
         collapsed: false,
         iscloseNav: false,
@@ -82,54 +124,50 @@
       }
       var tt = this;
       if (getCookie("token")) {
-        this.$http
-          .get("api/Menu/GetMenus", {
-            params: {
-              Token: getCookie("token")
-            }
-          })
-          .then(
-            function (response) {
-              var status = response.data.Status;
-              if (status === 1) {
-                this.menuList = response.data.Result;
-                // localStorage.setItem(
-                //   "menulist",
-                //   JSON.stringify(response.data.Result)
-                // );
-              } else if (status === 40001) {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
-                setTimeout(() => {
-                  this.$router.push({
-                    path: "/login"
-                  });
-                }, 1500);
-              } else {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
-              }
-            }.bind(this)
-          )
-          .catch(
-            function (error) {
-              this.$notify.error({
-                title: "错误",
-                message: "错误：请检查网络"
-              });
-              setTimeout(() => {
-                this.$router.push({
-                  path: "/error"
-                });
-              }, 1500);
-            }.bind(this)
-          );
+        // this.$http
+        //   .get("api/Menu/GetMenus", {
+        //     params: {
+        //       Token: getCookie("token")
+        //     }
+        //   })
+        //   .then(
+        //     function (response) {
+        //       var status = response.data.Status;
+        //       if (status === 1) {
+        //         this.menuList = response.data.Result;
+        //       } else if (status === 40001) {
+        //         this.$message({
+        //           showClose: true,
+        //           type: "warning",
+        //           message: response.data.Result
+        //         });
+        //         setTimeout(() => {
+        //           this.$router.push({
+        //             path: "/login"
+        //           });
+        //         }, 1500);
+        //       } else {
+        //         this.$message({
+        //           showClose: true,
+        //           type: "warning",
+        //           message: response.data.Result
+        //         });
+        //       }
+        //     }.bind(this)
+        //   )
+        //   .catch(
+        //     function (error) {
+        //       this.$notify.error({
+        //         title: "错误",
+        //         message: "错误：请检查网络"
+        //       });
+        //       setTimeout(() => {
+        //         this.$router.push({
+        //           path: "/error"
+        //         });
+        //       }, 1500);
+        //     }.bind(this)
+        //   );
       } else {
         this.$message({
           showClose: true,
