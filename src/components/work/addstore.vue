@@ -426,13 +426,13 @@
           )
           // 请求error
           .catch(
-            function (error) {
-              loading.close();
+            // function (error) {
+            //   loading.close();
             //   this.$notify.error({
             //     title: "错误",
             //     message: "错误：请检查网络"
             //   });
-            }.bind(this)
+            // }.bind(this)
           );
       },
       back() {
@@ -632,13 +632,13 @@
                 )
                 // 请求error
                 .catch(
-                  function (error) {
-                    loading.close();
+                  // function (error) {
+                  //   loading.close();
                   //   this.$notify.error({
                   //     title: "错误",
                   //     message: "错误：请检查网络"
-                    // });
-                  }.bind(this)
+                  //   });
+                  // }.bind(this)
                 );
             });
           }

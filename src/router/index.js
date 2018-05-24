@@ -18,6 +18,8 @@ var company = resolve => require(['../components/work/company.vue'], resolve)
 var editcompany = resolve => require(['../components/work/editcompany.vue'], resolve)  
 var addcompany = resolve => require(['../components/work/addcompany.vue'], resolve)  
 var store = resolve => require(['../components/work/store.vue'], resolve)  
+var addstore = resolve => require(['../components/work/addstore.vue'], resolve)  
+var editstore = resolve => require(['../components/work/editstore.vue'], resolve)  
 var enter = resolve => require(['../components/work/enter.vue'], resolve)  
 //用户管理
 var user = resolve => require(['../components/user/user.vue'], resolve)  
@@ -58,6 +60,8 @@ export default new Router({
         { path: '/work/editcompany/:id', component: editcompany, name: '编辑企业列表' },
         { path: '/work/addcompany', component: addcompany, name: '添加企业列表' },
         { path: '/store', component: store, name: '门店列表' },
+        { path: '/work/addstore', component: addstore, name: '添加门店列表' },
+        { path: '/work/editstore/:id', component: editstore, name: '编辑门店列表' },
         { path: '/enter', component: enter, name: '报名列表' },
         // 用户管理
         { path: '/user', component: user, name: '普通用户列表' },
