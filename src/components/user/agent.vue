@@ -2,36 +2,34 @@
   <div>
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>管理员管理</el-breadcrumb-item>
+      <el-breadcrumb-item>企业列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!--检索条-->
     <el-col class="toolbar" style="padding-top: 15px;">
       <el-form :inline="true" :model="filters">
-        <!-- <el-form-item>
-          <el-input v-model="filters.keyword" placeholder="关键字"></el-input>
+        <el-form-item label="关键字">
+          <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
-        </el-form-item> -->
-        <el-form-item style="float:right;">
-          <el-button type="primary" @click="handleAdd()">新增</el-button>
         </el-form-item>
+        <el-button type="primary" @click="handleAdd()" style="float:right;">新增</el-button>
       </el-form>
     </el-col>
     <!-- table 内容 -->
-    <el-table :data="manageList" style="width: 100%" :border='true'>
-      <el-table-column label="用户名" prop="Name">
+    <el-table :data="List" style="width: 100%" :border='true'>
+      <el-table-column label="学姐昵称" prop="Name">
       </el-table-column>
-      <el-table-column label="是否锁定" prop="IsLock" :formatter="IsLock">
+      <el-table-column label="联系电话" prop="Phone">
       </el-table-column>
-      <el-table-column label="创建时间" prop="CreateTime" :formatter="CreateTime">
+      <el-table-column label="微信" prop="Vixin">
       </el-table-column>
-      <el-table-column label="操作者" prop="Role">
+      <el-table-column label="QQ" prop="QQ">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" plain icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <!-- <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
+          <el-button size="mini" type="primary" plain icon="el-icon-edit" @click="edit(scope.$index)">编辑</el-button>
+          <el-button size="mini" type="danger" plain icon="el-icon-delete" @click="handleDel(scope.row.ID)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -41,135 +39,75 @@
       <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount">
       </el-pagination>
     </div>
-    <!--编辑界面-->
-    <el-dialog title="编辑" :visible.sync="editFormVisible">
-      <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-        <el-form-item label="账号" prop="Name">
-          <el-input v-model="editForm.Name" auto-complete="off"></el-input>
+
+    <!-- 模态框 -->
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" width="50%">
+      <el-form :model="editlist" :rules="rules" ref="editlist" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="学姐昵称" prop="Name">
+          <el-input v-model="editlist.Name" style="width:100%"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="Password">
-          <el-input type="password" v-model="editForm.Password" :maxlength="20" :clearable='true'></el-input>
+        <el-form-item label="联系号码" prop="Phone">
+          <el-input v-model="editlist.Phone" style="width:100%"></el-input>
         </el-form-item>
-        <el-form-item label="锁定">
-          <el-radio-group v-model="editForm.IsLock">
-            <el-radio class="radio" :label="true">是</el-radio>
-            <el-radio class="radio" :label="false">否</el-radio>
-          </el-radio-group>
+        <el-form-item label="QQ" prop="QQ">
+          <el-input v-model="editlist.QQ" style="width:100%"></el-input>
         </el-form-item>
-        <el-form-item label="角色">
-          <el-select v-model="editForm.RoleID" placeholder="请选择角色">
-            <el-option v-for="item in roleList" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
-          </el-select>
+        <el-form-item label="微信" prop="Vixin">
+          <el-input v-model="editlist.Vixin" style="width:100%"></el-input>
+        </el-form-item>
+        <el-form-item>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native="editFormVisible = false">取消</el-button>
-        <el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button v-if="edit" type="primary" @click="submitForm('editlist')">确 定</el-button>
+        <el-button v-if="!edit" type="primary" @click="addsubmitForm('editlist')">添加</el-button>
       </div>
     </el-dialog>
-    <!-- 新增界面 -->
-    <el-dialog title="新增" :visible.sync="addFormVisible">
-      <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-        <el-form-item label="账号" prop="Name">
-          <el-input v-model="addForm.Name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="Password">
-          <el-input type="password" v-model="addForm.Password" :maxlength="20" :clearable='true'></el-input>
-        </el-form-item>
-        <!-- <el-form-item label="锁定">
-          <el-radio-group v-model="addForm.IsLock">
-            <el-radio class="radio" :label="true">是</el-radio>
-            <el-radio class="radio" :label="false">否</el-radio>
-          </el-radio-group>
-        </el-form-item> -->
-        <el-form-item label="角色" prop="RoleID">
-          <el-select v-model="addForm.RoleID" placeholder="请选择角色">
-            <el-option v-for="item in roleList" :key="item.ID" :label="item.Name" :value="item.ID"></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="addFormVisible = false">取消</el-button>
-        <el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
-      </div>
-    </el-dialog>
+
   </div>
 </template>
 <script>
-  import md5 from "js-md5";
-
   export default {
     data() {
       return {
-        manageList: [], //管理员列表
         pageIndex: 1,
-        pageSize: 2,
+        pageSize: 12,
         pageCount: 1,
-        roleList: [], //管理员角色列表
+        List: [], //管理员角色列表
         // 搜索关键字
         filters: {
-          keyword: ""
+          Query: ""
         },
-        //编辑界面是否显示
-        editFormVisible: false,
-        editLoading: false,
-
-        //编辑界面数据
-        editForm: {
-          IsLock: false,
-          Name: "",
-          Role: "",
-          RoleID: "",
-          Password: ""
-        },
-        editFormRules: {
+        mainurl:'',
+        dialogFormVisible:false,
+        editlist:{},
+        rules: {
           Name: [{
             required: true,
-            message: "请输入账户",
-            trigger: "blur"
-          }],
-          Password: [{
+            message: '请输入昵称',
+            trigger: 'blur'
+          }, ],
+          Phone: [{
             required: true,
-            message: "请输入密码",
-            trigger: "blur"
-          }]
+            message: '请输入联系号码',
+            trigger: 'blur'
+          }, ],
+          QQ: [{
+            required: true,
+            message: '请输入QQ',
+            trigger: 'blur'
+          }, ],
+          Vixin: [{
+            required: true,
+            message: '请输入微信',
+            trigger: 'blur'
+          }, ],
         },
-        //新增界面是否显示
-        addFormVisible: false,
-        addLoading: false,
-        addFormRules: {
-          Name: [{
-            required: true,
-            message: "请输入账户",
-            trigger: "blur"
-          }],
-          Password: [{
-            required: true,
-            message: "请输入密码",
-            trigger: "blur"
-          }],
-          RoleID: [{
-            required: true,
-            message: "请选择角色",
-            trigger: "change"
-          }]
-        },
-        //新增界面数据
-        addForm: {
-          IsLock: false,
-          Name: "",
-          RoleID: "",
-          Password: ""
-        }
-      };
+        edit:'',
+      }
     },
     methods: {
-      /*
-           1、获取管理员列表 渲染列表
-           2、格式化时间
-           3、格式化是否锁定
-           4、分页
-        */
       getInfo() {
         const loading = this.$loading({
           lock: true,
@@ -178,20 +116,24 @@
           background: "rgba(0, 0, 0, 0.7)"
         });
         this.$http
-          .get("api/Admin/GetAdmin", {
+          .get("api/Back/QueryUser", {
             params: {
               pageIndex: this.pageIndex,
-              pageSize: this.pageSize
+              pageSize: this.pageSize,
+              Query:(this.filters.Query == '') ? '-1' : this.filters.Query,
+              Token: getCookie("token"),
+              Type:1
             }
           })
           .then(
             function (response) {
               loading.close();
               var status = response.data.Status;
-              if (status === 1) {
-                this.manageList = response.data.Result.data;
-                this.pageCount = response.data.Result.PageIndex;
-              } else if (status === 40001) {
+              if(status === 1){
+                this.List = response.data.Result.list;
+                this.pageCount = response.data.Result.page;
+              }
+              else if (status === 40001) {
                 this.$message({
                   showClose: true,
                   type: "warning",
@@ -202,7 +144,8 @@
                     path: "/login"
                   });
                 }, 1500);
-              } else {
+              }
+              else {
                 loading.close();
                 this.$message({
                   showClose: true,
@@ -223,245 +166,305 @@
             }.bind(this)
           );
       },
-      CreateTime(row, time) {
-        var date = row[time.property];
-        return date.replace("T", " ").split(".")[0];
+      edit(index){
+        this.editlist = this.List[index];
+        console.log(this.editlist)
+        this.dialogFormVisible = true;
+        this.edit = true;
       },
-      IsLock(row, lock) {
-        var lock = row[lock.property];
-        return lock ? "是" : "否";
+      //修改信息
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            const loading = this.$loading({
+                lock: true,
+                text: "Loading",
+                spinner: "el-icon-loading",
+                background: "rgba(0, 0, 0, 0.7)"
+              });
+            this.$http
+            .get("api/Back/EditAgent", {
+              params: {
+                Token: getCookie("token"),
+                ID: this.editlist.ID,
+                Name: this.editlist.Name,
+                Phone: this.editlist.Phone,
+                Vixin: this.editlist.Vixin,
+                QQ: this.editlist.QQ,
+              }
+            })
+            .then(
+              function (response) {
+                loading.close();
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.$message({
+                    showClose: true,
+                    type: "success",
+                    message: response.data.Result
+                  });
+                  this.getInfo()
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    this.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                } else {
+                  loading.close();
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function (error) {
+                loading.close();
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+            this.dialogFormVisible = false;
+            this.editlist = [];
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
       },
+      //新增
+      handleAdd(){
+        this.editlist = [];
+        this.dialogFormVisible = true;
+        this.edit = false;
+      },
+      addsubmitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            const loading = this.$loading({
+                lock: true,
+                text: "Loading",
+                spinner: "el-icon-loading",
+                background: "rgba(0, 0, 0, 0.7)"
+              });
+            this.$http
+            .get("api/Back/AddAgent", {
+              params: {
+                Token: getCookie("token"),
+                Name: this.editlist.Name,
+                Phone: this.editlist.Phone,
+                Vixin: this.editlist.Vixin,
+                QQ: this.editlist.QQ,
+              }
+            })
+            .then(
+              function (response) {
+                loading.close();
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.$message({
+                    showClose: true,
+                    type: "success",
+                    message: response.data.Result
+                  });
+                  this.getInfo()
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    this.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                } else {
+                  loading.close();
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function (error) {
+                loading.close();
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+            this.dialogFormVisible = false;
+            this.editlist = [];
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+
+      //删除
+      handleDel(id){
+        this.$confirm('确认删除该经纪人?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)"
+          });
+          this.$http
+            .get("api/Back/DelAgent", {
+              params: {
+                Token: getCookie("token"),
+                ID: id,
+              }
+            })
+            .then(
+              function (response) {
+                loading.close();
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.$message({
+                    showClose: true,
+                    type: "success",
+                    message: response.data.Result
+                  });
+                  this.getInfo()
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    this.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                } else {
+                  loading.close();
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function (error) {
+                loading.close();
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
+      
       handleCurrentChange(val) {
         this.pageIndex = val;
         this.getInfo();
       },
-      /*
-          1、添加编辑时获取角色列表，渲染下拉菜单
-          2、点击管理员列表的编辑，弹出模态框
-          3、点击新增管理严，弹出模态框
-          4、保存修改
-          5、保存添加
-        */
-      getRoleList() {
-        // 获取角色列表
-        this.$http
-          .get("api/Role/GetRoles", {
-            params: {
-              PageIndex: 1,
-              PageSize: 999
-            }
-          })
-          .then(
-            function (response) {
-              var status = response.data.Status;
-              if (status === 1) {
-                this.roleList = response.data.Result.data;
-              } else if (status === 40001) {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
-                setTimeout(() => {
-                  this.$router.push({
-                    path: "/login"
+
+      entry(id) {
+        this.$confirm('确认入职?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)"
+          });
+          this.$http
+            .get("api/Back/Entry", {
+              params: {
+                Token: getCookie("token"),
+                ID: id,
+              }
+            })
+            .then(
+              function (response) {
+                loading.close();
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.$message({
+                    showClose: true,
+                    type: "success",
+                    message: response.data.Result
                   });
-                }, 1500);
-              } else {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
-              }
-            }.bind(this)
-          )
-          // 请求error
-          .catch(
-            function (error) {
-              this.$notify.error({
-                title: "错误",
-                message: "错误：请检查网络"
-              });
-            }.bind(this)
-          );
-      },
-      handleEdit(index, row) {
-        // console.log(Object.assign({}, row));
-        var obj = Object.assign({}, row);
-        this.editFormVisible = true;
-        // 根据id获取用户信息
-        this.$http
-          .get("api/Admin/GetAdminByID", {
-            params: {
-              ID: obj.ID
-            }
-          })
-          .then(
-            function (response) {
-              var status = response.data.Status;
-              if (status === 1) {
-                this.editForm = response.data.Result;
-                // 将管理员ID传入参数中
-                this.editForm.ID = obj.ID;
-              } else if (status === 40001) {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
-                setTimeout(() => {
-                  this.$router.push({
-                    path: "/login"
+                  this.getInfo()
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
                   });
-                }, 1500);
-              } else {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
-              }
-            }.bind(this)
-          )
-          // 请求error
-          .catch(
-            function (error) {
-              this.$notify.error({
-                title: "错误",
-                message: "错误：请检查网络"
-              });
-            }.bind(this)
-          );
-        // 获取角色列表
-        this.getRoleList();
-      },
-      handleAdd() {
-        this.addFormVisible = true;
-        // 获取角色列表
-        this.getRoleList();
-      },
-      editSubmit() {
-        this.$refs.editForm.validate(valid => {
-          if (valid) {
-            //判断是否填写完整  --true
-            this.$confirm("确认提交吗？", "提示", {}).then(() => {
-              this.editLoading = true;
-              var para = Object.assign({}, this.editForm);
-              if (para.Password.length > 20) {} else {
-                para.Password = md5(para.Password);
-              }
-              // 将token传入参数中
-              para.Token = getCookie("token");
-              // 发保存请求
-              this.$http
-                .get("api/Admin/Edit", {
-                  params: para
-                })
-                .then(
-                  function (response) {
-                    this.editLoading = false;
-                    var status = response.data.Status;
-                    if (status === 1) {
-                      // 表单重置
-                      this.$refs["editForm"].resetFields();
-                      this.editFormVisible = false;
-                      this.getInfo();
-                    } else if (status === 40001) {
-                      this.$message({
-                        showClose: true,
-                        type: "warning",
-                        message: response.data.Result
-                      });
-                      setTimeout(() => {
-                        this.$router.push({
-                          path: "/login"
-                        });
-                      }, 1500);
-                    } else {
-                      this.$message({
-                        showClose: true,
-                        type: "warning",
-                        message: response.data.Result
-                      });
-                    }
-                  }.bind(this)
-                )
-                // 请求error
-                .catch(
-                  function (error) {
-                    this.$notify.error({
-                      title: "错误",
-                      message: "错误：请检查网络"
+                  setTimeout(() => {
+                    this.$router.push({
+                      path: "/login"
                     });
-                  }.bind(this)
-                );
-            });
-          }
+                  }, 1500);
+                } else {
+                  loading.close();
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function (error) {
+                loading.close();
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
         });
       },
-      addSubmit() {
-        this.$refs.addForm.validate(valid => {
-          if (valid) {
-            //判断是否填写完整  --true
-            this.$confirm("确认提交吗？", "提示", {}).then(() => {
-              this.addLoading = true;
-              //NProgress.start();
-              var para = Object.assign({}, this.addForm);
-              if (para.Password.length > 20) {} else {
-                para.Password = md5(para.Password);
-              }
-              // 将token传入参数中
-              para.Token = getCookie("token");
-              // 发保存请求
-              this.$http
-                .get("api/Admin/Add", {
-                  params: para
-                })
-                .then(
-                  function (response) {
-                    this.addLoading = false;
-                    var status = response.data.Status;
-                    if (status === 1) {
-                      // 表单重置
-                      this.$refs["addForm"].resetFields();
-                      this.addFormVisible = false;
-                      this.getInfo();
-                    } else if (status === 40001) {
-                      this.$message({
-                        showClose: true,
-                        type: "warning",
-                        message: response.data.Result
-                      });
-                      setTimeout(() => {
-                        this.$router.push({
-                          path: "/login"
-                        });
-                      }, 1500);
-                    } else {
-                      this.$message({
-                        showClose: true,
-                        type: "warning",
-                        message: response.data.Result
-                      });
-                    }
-                  }.bind(this)
-                )
-                // 请求error
-                .catch(
-                  function (error) {
-                    this.$notify.error({
-                      title: "错误",
-                      message: "错误：请检查网络"
-                    });
-                  }.bind(this)
-                );
-            });
-          }
-        });
-      }
     },
     mounted() {
+      this.mainurl = mainurl;
       this.getInfo();
     }
   };

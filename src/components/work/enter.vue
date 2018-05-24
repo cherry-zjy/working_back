@@ -20,7 +20,7 @@
           </el-col>
         </el-form-item>
         <el-form-item label="入职状态">
-          <el-select v-model="filters.Type" placeholder="发货状态">
+          <el-select v-model="filters.Type" placeholder="入职状态">
             <el-option v-for="item in typeList" :key="item.value" :label="item.name" :value="item.name"></el-option>
           </el-select>
         </el-form-item>
