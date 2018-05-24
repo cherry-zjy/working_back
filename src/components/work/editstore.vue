@@ -300,6 +300,7 @@
                 // 请求error
                 .catch(
                   function(error) {
+                    loading.close();
                     this.$notify.error({
                       title: "错误",
                       message: "错误：请检查网络"

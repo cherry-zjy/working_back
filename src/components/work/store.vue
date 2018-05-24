@@ -136,6 +136,75 @@
       handleAdd() {
         this.$router.push("/work/addstore");
       },
+      //删除
+      handleDel(id){
+        this.$confirm('确认删除该门店?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)"
+          });
+          this.$http
+            .get("api/Back/DelStory", {
+              params: {
+                Token: getCookie("token"),
+                ID: id,
+              }
+            })
+            .then(
+              function (response) {
+                loading.close();
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.$message({
+                    showClose: true,
+                    type: "success",
+                    message: response.data.Result
+                  });
+                  this.getInfo()
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    this.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                } else {
+                  loading.close();
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function (error) {
+                loading.close();
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
     },
     mounted() {
       this.mainurl = mainurl;
