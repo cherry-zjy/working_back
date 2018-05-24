@@ -21,11 +21,11 @@
         </el-form-item>
         <el-form-item label="入职状态">
           <el-select v-model="filters.Type" placeholder="入职状态">
-            <el-option v-for="item in typeList" :key="item.value" :label="item.name" :value="item.name"></el-option>
+            <el-option v-for="item in typeList" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getUsers()">查询</el-button>
+          <el-button type="primary" @click="getInfo()">查询</el-button>
           <el-button type="info" @click="getAllUsers()">重置</el-button>
         </el-form-item>
       </el-form>
@@ -70,31 +70,28 @@
         List: [], //管理员角色列表
         // 搜索关键字
         filters: {
-          Query: ""
+          Query: "",
+          StartTime: "",
+          EndTime: "",
+          Type:-1
         },
         typeList:[{
             name: "全部",
-            type: 0
+            value: -1
           },
           {
-            name: "未入职",
-            type: 1
+            name: "申请中",
+            value: 1
           },
           {
-            name: "未入职",
-            type: 2
+            name: "已入职",
+            value: 2
           },
         ],
         mainurl:''
       }
     },
     methods: {
-      /*
-             1、获取管理员列表 渲染列表
-             2、格式化时间
-             3、格式化是否锁定
-             4、分页
-          */
       getInfo() {
         const loading = this.$loading({
           lock: true,
@@ -109,6 +106,9 @@
               pageSize: this.pageSize,
               Query:(this.filters.Query == '') ? '-1' : this.filters.Query,
               Token: getCookie("token"),
+              StartTime:(this.filters.StartTime == '') ? '-1' : this.filters.StartTime,
+              EndTime:(this.filters.EndTime == '') ? '-1' : this.filters.EndTime,
+              Type:this.filters.Type,
             }
           })
           .then(
@@ -158,7 +158,14 @@
         Time = Time.substring(0, 10);
         return Time
       },
-
+      getAllUsers() {
+        this.filters = {
+          keyword: "",
+          StartTime: "",
+          EndTime: "",
+          Type: -1
+        }
+      },
       //删除
       handleDel(id){
         this.$confirm('确认删除该报名?', '提示', {

@@ -55,7 +55,7 @@
         List: [], //管理员角色列表
         // 搜索关键字
         filters: {
-          Query: ""
+          Query: "",
         },
         mainurl:''
       }
@@ -81,7 +81,6 @@
               pageSize: this.pageSize,
               Query:(this.filters.Query == '') ? '-1' : this.filters.Query,
               Token: getCookie("token"),
-              Type:0
             }
           })
           .then(
@@ -89,7 +88,7 @@
               loading.close();
               var status = response.data.Status;
               if(status === 1){
-                this.List = response.data.Result.List;
+                this.List = response.data.Result.list;
                 this.pageCount = response.data.Result.page;
               }
               else if (status === 40001) {
