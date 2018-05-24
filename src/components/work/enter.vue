@@ -2,44 +2,61 @@
   <div>
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/role' }">角色管理</el-breadcrumb-item>
-      <el-breadcrumb-item>权限管理</el-breadcrumb-item>
+      <el-breadcrumb-item>企业列表</el-breadcrumb-item>
     </el-breadcrumb>
-
+    <!--检索条-->
+    <el-col class="toolbar" style="padding-top: 15px;">
+      <el-form :inline="true" :model="filters">
+        <el-form-item label="关键字">
+          <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
+        </el-form-item>
+        <el-form-item label="创建时间">
+          <el-col :span="11">
+            <el-date-picker type="date" placeholder="开始日期" v-model="filters.StTime" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+          </el-col>
+          <el-col class="line" :span="1">~</el-col>
+          <el-col :span="11">
+            <el-date-picker type="date" placeholder="结束时间" v-model="filters.EndTime" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="入职状态">
+          <el-select v-model="filters.Type" placeholder="发货状态">
+            <el-option v-for="item in typeList" :key="item.value" :label="item.name" :value="item.name"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="getUsers()">查询</el-button>
+          <el-button type="info" @click="getAllUsers()">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-col>
     <!-- table 内容 -->
-    <table class="table">
-      <tbody>
-        <tr>
-          <td width="200px">角色名称</td>
-          <td width="">
-            {{name}}
-          </td>
-        </tr>
-        <tr>
-          <td>权限</td>
-          <td>
-            <ul class="miantable">
-              <li v-for="(items,index) in list" :key="index">
-                <span @click="togglemun(index)">
-                  <i :class="isopen==index?'el-icon-arrow-right':'el-icon-arrow-down'"></i>
-                  <a>{{items.Menu}}</a>
-                </span>
-                <ul class="seconuntable" v-if="isopen==index">
-                  <li v-for="(iten,ii) in items.SubMenu" :key="ii">
-                    <div class="relativedfg">
-                      <i class="el-icon-d-arrow-right"></i>
-                      <a>{{iten.SubMenu}}</a>
-                      <i @click="huoqu($parent.index,index,items.MenuID,iten.SubMenuID,iten.IsSelect)" :class="iten.IsSelect?'el-icon-circle-check-outline':'el-icon-circle-close-outline'"
-                        style="cursor: pointer;"></i>
-                    </div>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <el-table :data="List" style="width: 100%" :border='true'>
+      <el-table-column label="用户名" prop="Name">
+      </el-table-column>
+      <el-table-column label="联系电话" prop="Phone">
+      </el-table-column>
+      <el-table-column label="报名时间" prop="Time" :formatter="timefilterHandler">
+      </el-table-column>
+      <el-table-column label="经纪人号码" prop="AgentPhone">
+      </el-table-column>
+      <el-table-column label="申请企业" prop="Enterprise">
+      </el-table-column>
+      <el-table-column label="入职状态" prop="Type">
+      </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button v-if="scope.row.Type == '未入职'" size="mini" type="primary" @click="entry(scope.row.ID)">入职</el-button>
+          <el-button size="mini" type="danger" plain icon="el-icon-delete" @click="handleDel(scope.row.ID)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 分页 -->
+    <div class="block">
+      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next,jumper" :page-count="pageCount">
+      </el-pagination>
+    </div>
 
   </div>
 </template>
@@ -47,16 +64,38 @@
   export default {
     data() {
       return {
-        list: [],
-        name: "",
-        isopen: -1
-      };
+        pageIndex: 1,
+        pageSize: 12,
+        pageCount: 1,
+        List: [], //管理员角色列表
+        // 搜索关键字
+        filters: {
+          Query: ""
+        },
+        typeList:[{
+            name: "全部",
+            type: 0
+          },
+          {
+            name: "未入职",
+            type: 1
+          },
+          {
+            name: "未入职",
+            type: 2
+          },
+        ],
+        mainurl:''
+      }
     },
     methods: {
       /*
-             1、获取列表 渲染列表
+             1、获取管理员列表 渲染列表
+             2、格式化时间
+             3、格式化是否锁定
+             4、分页
           */
-      getInfo(id) {
+      getInfo() {
         const loading = this.$loading({
           lock: true,
           text: "Loading",
@@ -64,18 +103,23 @@
           background: "rgba(0, 0, 0, 0.7)"
         });
         this.$http
-          .get("api/Role/GetMenuJurisdiction", {
+          .get("api/Back/QuerySign", {
             params: {
-              RoleID: id
+              pageIndex: this.pageIndex,
+              pageSize: this.pageSize,
+              Query:(this.filters.Query == '') ? '-1' : this.filters.Query,
+              Token: getCookie("token"),
             }
           })
           .then(
             function (response) {
               loading.close();
               var status = response.data.Status;
-              if (status === 1) {
-                this.list = response.data.Result;
-              } else if (status === 40001) {
+              if(status === 1){
+                this.List = response.data.Result.List;
+                this.pageCount = response.data.Result.page;
+              }
+              else if (status === 40001) {
                 this.$message({
                   showClose: true,
                   type: "warning",
@@ -86,7 +130,8 @@
                     path: "/login"
                   });
                 }, 1500);
-              } else {
+              }
+              else {
                 loading.close();
                 this.$message({
                   showClose: true,
@@ -107,56 +152,160 @@
             }.bind(this)
           );
       },
-      togglemun(index) {
-        if (this.isopen == index) {
-          this.isopen = -1;
-        } else {
-          this.isopen = index;
-        }
+
+      timefilterHandler(row) {
+        var Time = row.Time;
+        Time = Time.substring(0, 10);
+        return Time
       },
-      huoqu(parentindex, $index, MenuID, SubMenuID, IsSelect) {
-        var RoleID = window.location.href.split("id=")[1].split("&rolename")[0];
-        this.$http
-          .get("api/Role/AddMenuJurisdiction", {
-            params: {
-              MenuID: MenuID,
-              SubMenuID: SubMenuID,
-              RoleID: RoleID,
-              Token: getCookie("token")
-            }
-          })
-          .then(
-            function (response) {
-              var status = response.data.Status;
-              if (status === 1) {
-                this.getInfo(RoleID);
-              } else if (status === 40001) {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
-                setTimeout(() => {
-                  this.$router.push({
-                    path: "/login"
-                  });
-                }, 1500);
-              } else {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
+
+      //删除
+      handleDel(id){
+        this.$confirm('确认删除该报名?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)"
+          });
+          this.$http
+            .get("api/Back/DelSign", {
+              params: {
+                Token: getCookie("token"),
+                ID: id,
               }
-            }.bind(this)
-          );
-      }
+            })
+            .then(
+              function (response) {
+                loading.close();
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.$message({
+                    showClose: true,
+                    type: "success",
+                    message: response.data.Result
+                  });
+                  this.getInfo()
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    this.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                } else {
+                  loading.close();
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function (error) {
+                loading.close();
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
+      
+      handleCurrentChange(val) {
+        this.pageIndex = val;
+        this.getInfo();
+      },
+
+      entry(id) {
+        this.$confirm('确认入职?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const loading = this.$loading({
+            lock: true,
+            text: "Loading",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)"
+          });
+          this.$http
+            .get("api/Back/Entry", {
+              params: {
+                Token: getCookie("token"),
+                ID: id,
+              }
+            })
+            .then(
+              function (response) {
+                loading.close();
+                var status = response.data.Status;
+                if (status === 1) {
+                  this.$message({
+                    showClose: true,
+                    type: "success",
+                    message: response.data.Result
+                  });
+                  this.getInfo()
+                } else if (status === 40001) {
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                  setTimeout(() => {
+                    this.$router.push({
+                      path: "/login"
+                    });
+                  }, 1500);
+                } else {
+                  loading.close();
+                  this.$message({
+                    showClose: true,
+                    type: "warning",
+                    message: response.data.Result
+                  });
+                }
+              }.bind(this)
+            )
+            // 请求error
+            .catch(
+              function (error) {
+                loading.close();
+                this.$notify.error({
+                  title: "错误",
+                  message: "错误：请检查网络"
+                });
+              }.bind(this)
+            );
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
     },
     mounted() {
-      var id = window.location.href.split("id=")[1].split("&rolename")[0];
-      var name = window.location.href.split("&rolename=")[1];
-      this.name = decodeURI(name);
-      this.getInfo(id);
+      this.mainurl = mainurl;
+      this.getInfo();
     }
   };
 
@@ -172,36 +321,6 @@
   .block {
     text-align: center;
     padding: 20px 0;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    /*关键代码*/
-  }
-
-  tr td {
-    padding: 12px 15px;
-    min-width: 0;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-    position: relative;
-    border: 1px solid #ebeef5;
-  }
-
-  .miantable li a {
-    display: inline-block;
-    border-radius: 6px;
-    text-align: left;
-    margin-bottom: 5px;
-    padding: 3px 0;
-  }
-
-  .seconuntable {
-    margin-left: 48px;
-    display: block;
   }
 
 </style>
