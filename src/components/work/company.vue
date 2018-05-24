@@ -80,10 +80,10 @@
         this.$http
           .get("api/Back/QueryEnterprise", {
             params: {
-              Token: getCookie("token"),
               pageIndex: this.pageIndex,
               pageSize: this.pageSize,
-              Query:(this.filters.Query == '') ? '-1' : this.filters.Query
+              Query:(this.filters.Query == '') ? '-1' : this.filters.Query,
+              Token: getCookie("token"),
             }
           })
           .then(
@@ -140,7 +140,7 @@
         this.$router.push("/work/editcompany/id=" + urlId);
       },
       handleAdd() {
-        this.$router.push("/work/editcompany/id=-1");
+        this.$router.push("/work/addcompany");
       },
     },
     mounted() {
