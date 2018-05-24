@@ -13,7 +13,7 @@
           <el-form-item label="企业名：" prop="Name">
             <el-input v-model="editForm.Name"></el-input>
           </el-form-item>
-          <el-form-item label="企业图" prop="Logo">
+          <el-form-item label="企业图">
             <el-upload v-model="editForm.Logo" class="avatar-uploader" :action="action" :show-file-list="false" :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload">
               <img v-if="imageUrl" :src="imageUrl" class="avatar" width="200">
@@ -53,27 +53,25 @@
           <p class="title">企业轮播图</p>
           <el-form-item label="厂区："></el-form-item>
           <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="cqimg"
-            list-type="picture-card" :on-success="cqhandleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
+            list-type="picture-card" :on-success="cqhandleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
           <el-form-item label="吃饭："></el-form-item>
           <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="eatimg"
-            list-type="picture-card">
+            list-type="picture-card" :on-success="eathandleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
           <el-form-item label="住宿："></el-form-item>
           <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="stayimg"
-            list-type="picture-card">
+            list-type="picture-card" :on-success="stayhandleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
           <el-form-item label="工资条："></el-form-item>
           <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="wageimg"
-            list-type="picture-card" :on-success="wagehandleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
+            list-type="picture-card" :on-success="wagehandleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
@@ -116,19 +114,13 @@
             </el-table-column>
             <el-table-column prop="Content" width="180" label="内容">
             </el-table-column>
-            <el-table-column
-      fixed="right"
-      label="操作"
-      width="120">
-      <template slot-scope="scope">
-        <el-button
-          @click.native.prevent="deleteRow(scope.$index, WorkRuler)"
-          type="text"
-          size="small">
-          移除
-        </el-button>
-      </template>
-    </el-table-column>
+            <el-table-column fixed="right" label="操作" width="120">
+              <template slot-scope="scope">
+                <el-button @click.native.prevent="deleteRow(scope.$index, WorkRuler)" type="text" size="small">
+                  移除
+                </el-button>
+              </template>
+            </el-table-column>
           </el-table>
           <p class="title">岗位说明</p>
           <el-form-item label="工作内容：" prop="WorkContent">
@@ -212,11 +204,6 @@
             required: true,
             message: '请输入名称',
             trigger: 'blur'
-          }],
-          Logo: [{
-            required: true,
-            message: "请上传图片",
-            trigger: "blur"
           }],
           Subsidy: [{
             required: true,
@@ -327,116 +314,14 @@
             default:
               break;
           }
-      },
+        },
       };
-    },
-    computed: {
-      userid: function () {
-        return window.location.href.split("id=")[1]
-      }
     },
     mounted() {
       this.mainurl = mainurl;
       this.action = this.mainurl + "/api/Back/UpdateForImage";
-      if (window.location.href.split("id=")[1] == '-1') {
-        this.editForm = []
-      } else {
-        this.getInfo()
-      }
-
     },
     methods: {
-      getInfo() {
-        const loading = this.$loading({
-          lock: true,
-          text: "Loading",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
-        // 获取详情
-        this.$http
-          .get("api/Back/Enterprise", {
-            params: {
-              ID: window.location.href.split("id=")[1],
-              Token: getCookie("token")
-            }
-          })
-          .then(
-            function (response) {
-              loading.close();
-              var status = response.data.Status;
-              if (status === 1) {
-                this.editForm = response.data.Result;
-                for (let index = 0; index < response.data.Result.Tag.length; index++) {
-                  this.dynamicTags.push(response.data.Result.Tag[index])
-                }
-                this.WorkRuler = response.data.Result.WorkRuler;
-                this.imageUrl = this.mainurl + response.data.Result.Logo;
-                for (let i = 0; i < response.data.Result.WorkImages.length; i++) {
-                  if (response.data.Result.WorkImages[i].Type == 0) {
-                    // alert(1)
-                    let arr = Array();
-                    arr = {
-                      url: this.mainurl + response.data.Result.WorkImages[i].Image
-                    }
-                    this.cqimg.push(arr)
-                    this.addcqimg.push(response.data.Result.WorkImages[i].Image)
-                  } else if (response.data.Result.WorkImages[i].Type == 1) {
-                    let arr = Array();
-                    arr = {
-                      url: this.mainurl + response.data.Result.WorkImages[i].Image
-                    }
-                    this.eatimg.push(arr)
-                    this.addeatimg.push(response.data.Result.WorkImages[i].Image)
-                  } else if (response.data.Result.WorkImages[i].Type == 2) {
-                    let arr = Array();
-                    arr = {
-                      url: this.mainurl + response.data.Result.WorkImages[i].Image
-                    }
-                    this.stayimg.push(arr)
-                    this.addstayimg.push(response.data.Result.WorkImages[i].Image)
-                  } else if (response.data.Result.WorkImages[i].Type == 3) {
-                    let arr = Array();
-                    arr = {
-                      url: this.mainurl + response.data.Result.WorkImages[i].Image
-                    }
-                    this.wageimg.push(arr)
-                    this.addwageimg.push(response.data.Result.WorkImages[i].Image)
-                  }
-
-                }
-              } else if (status === 40001) {
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
-                setTimeout(() => {
-                  this.$router.push({
-                    path: "/login"
-                  });
-                }, 1500);
-              } else {
-                loading.close();
-                this.$message({
-                  showClose: true,
-                  type: "warning",
-                  message: response.data.Result
-                });
-              }
-            }.bind(this)
-          )
-          // 请求error
-          .catch(
-            // function (error) {
-            //   loading.close();
-            //   this.$notify.error({
-            //     title: "错误",
-            //     message: "错误：请检查网络"
-            //   });
-            // }.bind(this)
-          );
-      },
       back() {
         this.$router.push("/company");
       },
@@ -524,44 +409,44 @@
               });
               //标签
               var tag = '';
-              for (let i = 0; i < para.Tag.length; i++) {
-                tag += ""+para.Tag[i]+",";
+              for (let i = 0; i < this.dynamicTags.length; i++) {
+                tag += "" + this.dynamicTags[i] + ",";
               }
-              tag = tag.substring(0,tag.length-1)
+              tag = tag.substring(0, tag.length - 1)
               //厂区图
               var cq = '';
-              for (let i = 0; i < this.cqimg.length; i++) {
-                cq += ""+this.addcqimg[i]+",";
+              for (let i = 0; i < this.addcqimg.length; i++) {
+                cq += "" + this.addcqimg[i] + ",";
               }
-              cq = cq.substring(0,cq.length-1)
+              cq = cq.substring(0, cq.length - 1)
               //吃饭图
               var eat = '';
-              for (let i = 0; i < this.eatimg.length; i++) {
-                eat += ""+this.addeatimg[i]+",";
+              for (let i = 0; i < this.addeatimg.length; i++) {
+                eat += "" + this.addeatimg[i] + ",";
               }
-              eat = eat.substring(0,eat.length-1)
+              eat = eat.substring(0, eat.length - 1)
               //住宿图
               var stay = '';
-              for (let i = 0; i < this.stayimg.length; i++) {
-                stay += ""+this.addstayimg[i]+",";
+              for (let i = 0; i < this.addstayimg.length; i++) {
+                stay += "" + this.addstayimg[i] + ",";
               }
-              stay = stay.substring(0,stay.length-1)
+              stay = stay.substring(0, stay.length - 1)
               //工资条
               var wage = '';
-              for (let i = 0; i < this.wageimg.length; i++) {
-                wage += ""+this.addwageimg[i]+",";
+              for (let i = 0; i < this.addwageimg.length; i++) {
+                wage += "" + this.addwageimg[i] + ",";
               }
-              wage = wage.substring(0,wage.length-1)
+              wage = wage.substring(0, wage.length - 1)
               //录用条件
               var rule = '';
               for (let i = 0; i < this.WorkRuler.length; i++) {
-                rule += ""+this.WorkRuler[i].Title+","+this.WorkRuler[i].Content+"|";
+                rule += "" + this.WorkRuler[i].Title + "," + this.WorkRuler[i].Content + "|";
               }
-              rule = rule.substring(0,rule.length-1)
+              rule = rule.substring(0, rule.length - 1)
 
               // 发保存请求
               this.$http
-                .post("api/Back/EditEnterprise",
+                .post("api/Back/AddEnterprise",
                   qs.stringify({
                     Token: getCookie("token"),
                     Name: para.Name,
@@ -586,14 +471,14 @@
                     EnterprisePeople: para.EnterprisePeople,
                     WorkEnvir: para.WorkEnvir,
                     WorkContent: para.WorkContent,
-                    ID:window.location.href.split("id=")[1],
-                    Tag:tag,
-                    FactoryImage:cq,
-                    EatImage:eat,
-                    LiveImage:stay,
-                    PayrollImage:wage,
-                    Ruler:rule,
-                    SubsidyType:para.SubsidyType
+                    ID: '-1',
+                    Tag: tag,
+                    FactoryImage: cq,
+                    EatImage: eat,
+                    LiveImage: stay,
+                    PayrollImage: wage,
+                    Ruler: rule,
+                    SubsidyType: para.SubsidyType
                   })
                 )
                 .then(
@@ -612,6 +497,7 @@
                       this.change = false;
                       this.add = fasle;
                     } else if (status === 40001) {
+                      loading.close();
                       this.$message({
                         showClose: true,
                         type: "warning",
@@ -634,13 +520,13 @@
                 )
                 // 请求error
                 .catch(
-                  // function (error) {
-                  //   loading.close();
+                  function (error) {
+                    loading.close();
                   //   this.$notify.error({
                   //     title: "错误",
                   //     message: "错误：请检查网络"
                   //   });
-                  // }.bind(this)
+                  }.bind(this)
                 );
             });
           }

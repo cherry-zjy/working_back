@@ -60,13 +60,15 @@
           </el-upload>
           <el-form-item label="吃饭："></el-form-item>
           <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="eatimg"
-            list-type="picture-card">
+            list-type="picture-card" :on-success="eathandleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
           <el-form-item label="住宿："></el-form-item>
           <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="stayimg"
-            list-type="picture-card">
+            list-type="picture-card" :on-success="stayhandleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
@@ -338,11 +340,7 @@
     mounted() {
       this.mainurl = mainurl;
       this.action = this.mainurl + "/api/Back/UpdateForImage";
-      if (window.location.href.split("id=")[1] == '-1') {
-        this.editForm = []
-      } else {
-        this.getInfo()
-      }
+      this.getInfo()
 
     },
     methods: {
