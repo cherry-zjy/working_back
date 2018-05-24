@@ -2,4 +2,9 @@
   margin: 0;
   padding: 0;
 }
+.el-upload-list--picture .el-upload-list__item{
+  width: 92px;
+  display: inline-block;
+  padding: 15px;
+}
 

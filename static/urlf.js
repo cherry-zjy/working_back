@@ -1,4 +1,4 @@
-var mainurl = "http://192.168.1.105/Working/"
+var mainurl = "http://192.168.1.125/Working/"
 
 function setCookie(name, value) {
 	var Days = 30;

@@ -15,6 +15,7 @@ var power = resolve => require(['../components/role/power.vue'], resolve)
 
 // 打工管理
 var company = resolve => require(['../components/work/company.vue'], resolve)  
+var editcompany = resolve => require(['../components/work/editcompany.vue'], resolve)  
 var store = resolve => require(['../components/work/store.vue'], resolve)  
 var enter = resolve => require(['../components/work/enter.vue'], resolve)  
 //用户管理
@@ -53,6 +54,7 @@ export default new Router({
 
         // 打工管理
         { path: '/company', component: company, name: '企业列表' },
+        { path: '/work/editcompany/:id', component: editcompany, name: '编辑企业列表' },
         { path: '/store', component: store, name: '门店列表' },
         { path: '/enter', component: enter, name: '报名列表' },
         // 用户管理
