@@ -28,7 +28,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" plain icon="el-icon-edit" @click="edit(scope.$index)">编辑</el-button>
+          <el-button size="mini" type="primary" plain icon="el-icon-edit" @click="handleedit(scope.$index)">编辑</el-button>
           <el-button size="mini" type="danger" plain icon="el-icon-delete" @click="handleDel(scope.row.ID)">删除</el-button>
         </template>
       </el-table-column>
@@ -166,7 +166,7 @@
             }.bind(this)
           );
       },
-      edit(index){
+      handleedit(index){
         this.editlist = this.List[index];
         console.log(this.editlist)
         this.dialogFormVisible = true;
@@ -458,7 +458,7 @@
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: '已取消'
           });
         });
       },
