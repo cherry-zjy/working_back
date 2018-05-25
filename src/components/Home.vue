@@ -87,7 +87,7 @@
             "title": "普通用户列表",
             "urlf": "user.html",
           }, {
-            "title": "经理人列表",
+            "title": "经纪人列表",
             "urlf": "agent.html",
           }]
         }, {
@@ -99,7 +99,7 @@
         },{
           "name": "平台管理",
           "snippet": [{
-            "title": "banner列表",
+            "title": "今日推荐",
             "urlf": "banner.html",
           },{
             "title": "意见反馈列表",
