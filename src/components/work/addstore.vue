@@ -21,7 +21,7 @@
             <el-input v-model="editForm.Name"></el-input>
           </el-form-item>
           <el-form-item label="经纪人：" prop="Phone">
-            <el-select v-model="editForm.Phone" placeholder="请选择类型">
+            <el-select v-model="editForm.Phone" placeholder="请选择经纪人">
               <el-option v-for="item in phoneList" :key="item.Phone" :label="item.Name" :value="item.Phone"></el-option>
             </el-select>
           </el-form-item>

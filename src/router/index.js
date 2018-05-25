@@ -23,6 +23,9 @@ var editstore = resolve => require(['../components/work/editstore.vue'], resolve
 var enter = resolve => require(['../components/work/enter.vue'], resolve)  
 //用户管理
 var user = resolve => require(['../components/user/user.vue'], resolve)  
+var userdetail = resolve => require(['../components/user/userdetail.vue'], resolve)  
+var experience = resolve => require(['../components/user/experience.vue'], resolve)  
+var wage = resolve => require(['../components/user/wage.vue'], resolve)  
 var agent = resolve => require(['../components/user/agent.vue'], resolve)  
 //提现管理
 var withdraw = resolve => require(['../components/withdraw/withdraw.vue'], resolve)  
@@ -65,6 +68,9 @@ export default new Router({
         { path: '/enter', component: enter, name: '报名列表' },
         // 用户管理
         { path: '/user', component: user, name: '普通用户列表' },
+        { path: '/user/userdetail/:id', component: userdetail, name: '用户详情' },
+        { path: '/user/experience/:id', component: experience, name: '工作经历' },
+        { path: '/user/wage/:id', component: wage, name: '工资详情' },
         { path: '/agent', component: agent, name: '经理人列表' },
         //提现管理
         { path: '/withdraw', component: withdraw, name: '提现列表' },        
