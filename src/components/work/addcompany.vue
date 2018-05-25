@@ -3,7 +3,7 @@
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/company' }">企业列表</el-breadcrumb-item>
-      <el-breadcrumb-item>企业列表</el-breadcrumb-item>
+      <el-breadcrumb-item>添加企业列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- table 内容 -->
     <el-row>
@@ -13,7 +13,7 @@
           <el-form-item label="企业名：" prop="Name">
             <el-input v-model="editForm.Name"></el-input>
           </el-form-item>
-          <el-form-item label="企业图">
+          <el-form-item label="企业图" prop="Logo">
             <el-upload v-model="editForm.Logo" class="avatar-uploader" :action="action" :show-file-list="false" :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload">
               <img v-if="imageUrl" :src="imageUrl" class="avatar" width="200">
@@ -28,7 +28,7 @@
           <el-form-item label="补贴金额（元）：" prop="Subsidy">
             <el-input v-model="editForm.Subsidy"></el-input>
           </el-form-item>
-          <el-form-item label="企业标签：">
+          <el-form-item label="企业标签：" prop="dynamicTags">
             <el-tag type='danger' :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleClose(tag)">
               {{tag}}
             </el-tag>
@@ -51,30 +51,37 @@
           </el-form-item>
 
           <p class="title">企业轮播图</p>
-          <el-form-item label="厂区："></el-form-item>
-          <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="cqimg"
+          <el-form-item label="厂区：" prop="cqimg">
+          <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="cqhandleRemove" :file-list="addcqimg"
             list-type="picture-card" :on-success="cqhandleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
-          <el-form-item label="吃饭："></el-form-item>
-          <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="eatimg"
+          </el-form-item>
+
+          <el-form-item label="吃饭：" prop="eatimg">
+          <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="eathandleRemove" :file-list="addeatimg"
             list-type="picture-card" :on-success="eathandleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
-          <el-form-item label="住宿："></el-form-item>
-          <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="stayimg"
+          </el-form-item>
+
+          <el-form-item label="住宿：" prop="stayimg">
+          <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="stayhandleRemove" :file-list="addstayimg"
             list-type="picture-card" :on-success="stayhandleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
-          <el-form-item label="工资条："></el-form-item>
-          <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="wageimg"
+          </el-form-item>
+
+          <el-form-item label="工资条：" prop="wageimg">
+          <el-upload class="upload-demo" :action="action" :on-preview="handlePreview" :on-remove="wagehandleRemove" :file-list="addwageimg"
             list-type="picture-card" :on-success="wagehandleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
+          </el-form-item>
         </el-col>
         <el-col :span="12">
           <p class="title">工资说明</p>
@@ -84,7 +91,7 @@
           <el-form-item label="住宿：" prop="SSStay">
             <el-input v-model="editForm.SSStay" type="textarea"></el-input>
           </el-form-item>
-          <el-form-item label="底薪：">
+          <el-form-item label="底薪（元）：">
             <el-input v-model="editForm.BasicSalary"></el-input>
           </el-form-item>
           <el-form-item label="合同说明：" prop="Contract">
@@ -170,6 +177,48 @@
   import qs from "qs";
   export default {
     data() {
+      var checkLogo = (rule, value, callback) => {
+        if (this.imageUrl == '') {
+          callback(new Error("请上传图片"));
+        } else {
+          callback();
+        }
+      };
+      var checkcqimg = (rule, value, callback) => {
+        if (this.cqimg.length == 0 && this.addcqimg.length == 0) {
+          callback(new Error("请上传厂区图片"));
+        } else {
+          callback();
+        }
+      };
+      var checkeatimg = (rule, value, callback) => {
+        if (this.eatimg.length == 0 && this.addeatimg.length == 0) {
+          callback(new Error("请上传伙食图片"));
+        } else {
+          callback();
+        }
+      };
+      var checkstayimg = (rule, value, callback) => {
+        if (this.stayimg.length == 0 && this.addstayimg.length == 0) {
+          callback(new Error("请上传住宿图片"));
+        } else {
+          callback();
+        }
+      };
+      var checkwageimg = (rule, value, callback) => {
+        if (this.wageimg.length == 0 && this.addwageimg.length == 0) {
+          callback(new Error("请上传工资条图片"));
+        } else {
+          callback();
+        }
+      };
+      var checktag = (rule, value, callback) => {
+        if (this.dynamicTags.length == 0) {
+          callback(new Error("请添加企业标签"));
+        } else {
+          callback();
+        }
+      };
       return {
         editForm: {},
         mainurl: "",
@@ -205,6 +254,24 @@
             message: '请输入名称',
             trigger: 'blur'
           }],
+          dynamicTags: [{
+            validator: checktag
+          }],
+          Logo: [{
+            validator: checkLogo
+          }],
+          cqimg: [{
+            validator: checkcqimg
+          }],
+          eatimg: [{
+            validator: checkeatimg
+          }],
+          stayimg: [{
+            validator: checkstayimg
+          }],
+          wageimg: [{
+            validator: checkwageimg
+          }],
           Subsidy: [{
             required: true,
             message: "请输入补贴",
@@ -222,7 +289,7 @@
           }],
           SalaryDate: [{
             required: true,
-            message: "请输入补贴",
+            message: "请输入发薪日",
             trigger: "blur"
           }],
           EnterprisePeople: [{
@@ -326,8 +393,38 @@
         this.$router.push("/company");
       },
       //批量上传图片
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
+      cqhandleRemove(file, fileList) {
+        //获取删除的图片地址，在addcqimg中对应删除
+        let file1 = file.response.Result
+        for (let i = 0; i < this.addcqimg.length; i++) {
+          if(this.addcqimg[i] == file1){
+            this.addcqimg.splice(i,1)
+          }
+        }
+      },
+      eathandleRemove(file, fileList) {
+        let file1 = file.response.Result
+        for (let i = 0; i < this.addeatimg.length; i++) {
+          if(this.addeatimg[i] == file1){
+            this.addeatimg.splice(i,1)
+          }
+        }
+      },
+      stayhandleRemove(file, fileList) {
+        let file1 = file.response.Result
+        for (let i = 0; i < this.addstayimg.length; i++) {
+          if(this.addstayimg[i] == file1){
+            this.addstayimg.splice(i,1)
+          }
+        }
+      },
+      wagehandleRemove(file, fileList) {
+        let file1 = file.response.Result
+        for (let i = 0; i < this.addwageimg.length; i++) {
+          if(this.addwageimg[i] == file1){
+            this.addwageimg.splice(i,1)
+          }
+        }
       },
       handlePreview(file) {
         console.log(file);
@@ -347,7 +444,7 @@
       //企业大图
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
-        this.getList.Logo = res.Result[0];
+        this.editForm.Logo = res.Result[0];
       },
       beforeAvatarUpload(file) {
         const isLt2M = file.size / 1024 / 1024 < 2;
@@ -371,7 +468,15 @@
       handleInputConfirm() {
         let inputValue = this.inputValue;
         if (inputValue) {
-          this.dynamicTags.push(inputValue);
+          if (this.dynamicTags.length >= 3) {
+            this.$message({
+              showClose: true,
+              type: "warning",
+              message: '最多添加3个标签哦'
+            });
+          } else {
+            this.dynamicTags.push(inputValue);
+          }
         }
         this.inputVisible = false;
         this.inputValue = '';
@@ -395,6 +500,13 @@
       },
       // 保存
       submitList(formName) {
+        if (this.addcqimg.length >= 4 || this.addeatimg.length >= 4 || this.addstayimg.length >= 4 || this.addwageimg.length >= 4) {
+          this.$message({
+            showClose: true,
+            type: "warning",
+            message: '企业轮播图最多只能上传4张哦'
+          });
+        }
         this.$refs[formName].validate(valid => {
           if (valid) {
             //判断是否填写完整  --true
@@ -439,11 +551,14 @@
               wage = wage.substring(0, wage.length - 1)
               //录用条件
               var rule = '';
-              for (let i = 0; i < this.WorkRuler.length; i++) {
-                rule += "" + this.WorkRuler[i].Title + "," + this.WorkRuler[i].Content + "|";
+              if (this.WorkRuler.length == 0) {
+                rule = '暂无,暂无'
+              } else {
+                for (let i = 0; i < this.WorkRuler.length; i++) {
+                  rule += "" + this.WorkRuler[i].Title + "," + this.WorkRuler[i].Content + "|";
+                }
+                rule = rule.substring(0, rule.length - 1)
               }
-              rule = rule.substring(0, rule.length - 1)
-
               // 发保存请求
               this.$http
                 .post("api/Back/AddEnterprise",
@@ -460,11 +575,11 @@
                     SSStay: para.SSStay,
                     Contract: para.Contract,
                     PayMoney: para.PayMoney,
-                    Insurance: para.Insurance,
-                    Prompt: para.Prompt,
+                    Insurance: (para.Insurance == '') ? '暂无' : para.Insurance,
+                    Prompt: (para.Prompt == '') ? '暂无' : para.Prompt,                    
                     Environment: para.Environment,
                     EnterpriseExplain: para.EnterpriseExplain,
-                    Adress: para.Adress,
+                    Adress: (para.Adress == '') ? '暂无' : para.Adress,
                     SubsidyDetail: para.SubsidyDetail,
                     Subsidy: para.Subsidy,
                     SubsidyType: para.SubsidyType,
