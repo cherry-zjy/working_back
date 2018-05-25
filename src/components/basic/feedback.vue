@@ -4,31 +4,19 @@
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
       <el-breadcrumb-item>意见反馈列表</el-breadcrumb-item>
     </el-breadcrumb>
-    <!--检索条-->
-    <el-col class="toolbar" style="padding-top: 15px;">
-      <el-form :inline="true" :model="filters">
-        <el-form-item label="关键字">
-          <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="getUsers()">查询</el-button>
-        </el-form-item>
-        <el-button type="primary" @click="handleAdd()" style="float:right;">新增</el-button>
-      </el-form>
-    </el-col>
+
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true'>
-      <el-table-column label="学姐昵称" prop="Name">
+      <el-table-column label="用户名" prop="Name">
       </el-table-column>
       <el-table-column label="联系电话" prop="Phone">
       </el-table-column>
-      <el-table-column label="微信" prop="Vixin">
+      <el-table-column label="反馈时间" prop="Time" :formatter="Time">
       </el-table-column>
-      <el-table-column label="QQ" prop="QQ">
+      <el-table-column label="反馈内容" prop="Content">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" plain icon="el-icon-edit" @click="handleedit(scope.$index)">编辑</el-button>
           <el-button size="mini" type="danger" plain icon="el-icon-delete" @click="handleDel(scope.row.ID)">删除</el-button>
         </template>
       </el-table-column>
@@ -40,31 +28,6 @@
       </el-pagination>
     </div>
 
-    <!-- 模态框 -->
-    <el-dialog title="编辑" :visible.sync="dialogFormVisible" width="50%">
-      <el-form :model="editlist" :rules="rules" ref="editlist" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="学姐昵称" prop="Name">
-          <el-input v-model="editlist.Name" style="width:100%"></el-input>
-        </el-form-item>
-        <el-form-item label="联系号码" prop="Phone">
-          <el-input v-model="editlist.Phone" style="width:100%"></el-input>
-        </el-form-item>
-        <el-form-item label="QQ" prop="QQ">
-          <el-input v-model="editlist.QQ" style="width:100%"></el-input>
-        </el-form-item>
-        <el-form-item label="微信" prop="Vixin">
-          <el-input v-model="editlist.Vixin" style="width:100%"></el-input>
-        </el-form-item>
-        <el-form-item>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button v-if="edit" type="primary" @click="submitForm('editlist')">确 定</el-button>
-        <el-button v-if="!edit" type="primary" @click="addsubmitForm('editlist')">添加</el-button>
-      </div>
-    </el-dialog>
-
   </div>
 </template>
 <script>
@@ -75,36 +38,7 @@
         pageSize: 12,
         pageCount: 1,
         List: [], //管理员角色列表
-        // 搜索关键字
-        filters: {
-          Query: ""
-        },
         mainurl:'',
-        dialogFormVisible:false,
-        editlist:{},
-        rules: {
-          Name: [{
-            required: true,
-            message: '请输入昵称',
-            trigger: 'blur'
-          }, ],
-          Phone: [{
-            required: true,
-            message: '请输入联系号码',
-            trigger: 'blur'
-          }, ],
-          QQ: [{
-            required: true,
-            message: '请输入QQ',
-            trigger: 'blur'
-          }, ],
-          Vixin: [{
-            required: true,
-            message: '请输入微信',
-            trigger: 'blur'
-          }, ],
-        },
-        edit:'',
       }
     },
     methods: {
@@ -116,13 +50,11 @@
           background: "rgba(0, 0, 0, 0.7)"
         });
         this.$http
-          .get("api/Back/QueryUser", {
+          .get("api/Back/FeedBack", {
             params: {
               pageIndex: this.pageIndex,
               pageSize: this.pageSize,
-              Query:(this.filters.Query == '') ? '-1' : this.filters.Query,
               Token: getCookie("token"),
-              Type:1
             }
           })
           .then(
@@ -166,162 +98,14 @@
             }.bind(this)
           );
       },
-      handleedit(index){
-        this.editlist = this.List[index];
-        console.log(this.editlist)
-        this.dialogFormVisible = true;
-        this.edit = true;
+      Time(row) {
+        var Time = row.Time;
+        Time = Time.substring(0, 10);
+        return Time
       },
-      //修改信息
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            const loading = this.$loading({
-                lock: true,
-                text: "Loading",
-                spinner: "el-icon-loading",
-                background: "rgba(0, 0, 0, 0.7)"
-              });
-            this.$http
-            .get("api/Back/EditAgent", {
-              params: {
-                Token: getCookie("token"),
-                ID: this.editlist.ID,
-                Name: this.editlist.Name,
-                Phone: this.editlist.Phone,
-                Vixin: this.editlist.Vixin,
-                QQ: this.editlist.QQ,
-              }
-            })
-            .then(
-              function (response) {
-                loading.close();
-                var status = response.data.Status;
-                if (status === 1) {
-                  this.$message({
-                    showClose: true,
-                    type: "success",
-                    message: response.data.Result
-                  });
-                  this.getInfo()
-                } else if (status === 40001) {
-                  this.$message({
-                    showClose: true,
-                    type: "warning",
-                    message: response.data.Result
-                  });
-                  setTimeout(() => {
-                    this.$router.push({
-                      path: "/login"
-                    });
-                  }, 1500);
-                } else {
-                  loading.close();
-                  this.$message({
-                    showClose: true,
-                    type: "warning",
-                    message: response.data.Result
-                  });
-                }
-              }.bind(this)
-            )
-            // 请求error
-            .catch(
-              function (error) {
-                loading.close();
-                this.$notify.error({
-                  title: "错误",
-                  message: "错误：请检查网络"
-                });
-              }.bind(this)
-            );
-            this.dialogFormVisible = false;
-            this.editlist = [];
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      //新增
-      handleAdd(){
-        this.editlist = [];
-        this.dialogFormVisible = true;
-        this.edit = false;
-      },
-      addsubmitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            const loading = this.$loading({
-                lock: true,
-                text: "Loading",
-                spinner: "el-icon-loading",
-                background: "rgba(0, 0, 0, 0.7)"
-              });
-            this.$http
-            .get("api/Back/AddAgent", {
-              params: {
-                Token: getCookie("token"),
-                Name: this.editlist.Name,
-                Phone: this.editlist.Phone,
-                Vixin: this.editlist.Vixin,
-                QQ: this.editlist.QQ,
-              }
-            })
-            .then(
-              function (response) {
-                loading.close();
-                var status = response.data.Status;
-                if (status === 1) {
-                  this.$message({
-                    showClose: true,
-                    type: "success",
-                    message: response.data.Result
-                  });
-                  this.getInfo()
-                } else if (status === 40001) {
-                  this.$message({
-                    showClose: true,
-                    type: "warning",
-                    message: response.data.Result
-                  });
-                  setTimeout(() => {
-                    this.$router.push({
-                      path: "/login"
-                    });
-                  }, 1500);
-                } else {
-                  loading.close();
-                  this.$message({
-                    showClose: true,
-                    type: "warning",
-                    message: response.data.Result
-                  });
-                }
-              }.bind(this)
-            )
-            // 请求error
-            .catch(
-              function (error) {
-                loading.close();
-                this.$notify.error({
-                  title: "错误",
-                  message: "错误：请检查网络"
-                });
-              }.bind(this)
-            );
-            this.dialogFormVisible = false;
-            this.editlist = [];
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-
       //删除
       handleDel(id){
-        this.$confirm('确认删除该经纪人?', '提示', {
+        this.$confirm('确认删除该意见?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -333,7 +117,7 @@
             background: "rgba(0, 0, 0, 0.7)"
           });
           this.$http
-            .get("api/Back/DelAgent", {
+            .get("api/Back/DelFeedBack", {
               params: {
                 Token: getCookie("token"),
                 ID: id,
@@ -388,79 +172,9 @@
           });
         });
       },
-      
       handleCurrentChange(val) {
         this.pageIndex = val;
         this.getInfo();
-      },
-
-      entry(id) {
-        this.$confirm('确认入职?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          const loading = this.$loading({
-            lock: true,
-            text: "Loading",
-            spinner: "el-icon-loading",
-            background: "rgba(0, 0, 0, 0.7)"
-          });
-          this.$http
-            .get("api/Back/Entry", {
-              params: {
-                Token: getCookie("token"),
-                ID: id,
-              }
-            })
-            .then(
-              function (response) {
-                loading.close();
-                var status = response.data.Status;
-                if (status === 1) {
-                  this.$message({
-                    showClose: true,
-                    type: "success",
-                    message: response.data.Result
-                  });
-                  this.getInfo()
-                } else if (status === 40001) {
-                  this.$message({
-                    showClose: true,
-                    type: "warning",
-                    message: response.data.Result
-                  });
-                  setTimeout(() => {
-                    this.$router.push({
-                      path: "/login"
-                    });
-                  }, 1500);
-                } else {
-                  loading.close();
-                  this.$message({
-                    showClose: true,
-                    type: "warning",
-                    message: response.data.Result
-                  });
-                }
-              }.bind(this)
-            )
-            // 请求error
-            .catch(
-              function (error) {
-                loading.close();
-                this.$notify.error({
-                  title: "错误",
-                  message: "错误：请检查网络"
-                });
-              }.bind(this)
-            );
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消'
-          });
-        });
       },
     },
     mounted() {
