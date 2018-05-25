@@ -2,7 +2,7 @@
   <div>
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>门店列表</el-breadcrumb-item>
+      <el-breadcrumb-item>经纪人列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!--检索条-->
     <el-col class="toolbar" style="padding-top: 15px;">
@@ -25,7 +25,7 @@
           <img :src="mainurl+scope.row.Image" width="200" />
         </template>
       </el-table-column>
-      <el-table-column label="经纪人" prop="Phone">
+      <el-table-column label="经纪人" prop="JJName">
       </el-table-column>
       <el-table-column label="门店地址" prop="Adress">
       </el-table-column>
@@ -45,7 +45,6 @@
   </div>
 </template>
 <script>
-  import md5 from "js-md5";
 
   export default {
     data() {
@@ -90,7 +89,7 @@
               var status = response.data.Status;
               if (status === 1) {
                 this.List = response.data.Result.list;
-                this.pageCount = response.data.Result.PageIndex;
+                this.pageCount = response.data.Result.page;
               } else if (status === 40001) {
                 this.$message({
                   showClose: true,

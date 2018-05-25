@@ -217,6 +217,7 @@
                         type: "success",
                         message: response.data.Result
                       });
+                      this.back()
                       // 表单重置
                       this.$refs["editForm"].resetFields();
                     } else if (status === 40001) {

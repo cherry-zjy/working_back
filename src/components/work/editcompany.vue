@@ -607,6 +607,7 @@
                       // 表单重置
                       this.$refs["getList"].resetFields();
                       this.getInfo();
+                      this.back()
                       this.change = false;
                       this.add = fasle;
                     } else if (status === 40001) {

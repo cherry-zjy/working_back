@@ -20,9 +20,9 @@
           <el-form-item label="门店名：" prop="Name">
             <el-input v-model="editForm.Name"></el-input>
           </el-form-item>
-          <el-form-item label="经纪人：" prop="Phone">
-            <el-select v-model="editForm.Phone" placeholder="请选择类型">
-              <el-option v-for="item in phoneList" :key="item.Phone" :label="item.Phone" :value="item.Phone"></el-option>
+          <el-form-item label="经纪人：" prop="JJName">
+            <el-select v-model="editForm.JJName" placeholder="请选择经纪人">
+              <el-option v-for="item in phoneList" :key="item.Phone" :label="item.Name" :value="item.Phone"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="门店地址：">
@@ -72,7 +72,7 @@
             message: '请输入工作时间',
             trigger: 'blur'
           }],
-          Phone: [{
+          JJName: [{
             required: true,
             message: '请选择经纪人',
             trigger: 'change'
@@ -257,7 +257,7 @@
                     ID: window.location.href.split("id=")[1],
                     Image: para.Image,
                     Name: para.Name,
-                    Phone: para.Phone,
+                    Phone: para.JJName,
                     Adress: para.Adress,
                     Longitude: para.Longitude,
                     Latitude: para.Latitude,
