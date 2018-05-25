@@ -13,6 +13,10 @@
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
         </el-form-item>
+        <el-form-item style="float:right;">
+          <el-button type="primary" @click="handleAdd()">导入工资条</el-button>
+          <input id="file" type="file" @change="FileIn()" />
+        </el-form-item>
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -265,6 +269,7 @@
           }
         })
       },
+      
       //用户详情
       detail(id){
         this.$router.push("/user/userdetail/id=" + id);
@@ -281,6 +286,59 @@
         this.pageIndex = val;
         this.getInfo();
       },
+      //导入工资条
+      FileIn() {
+      const loadingDR = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
+      var formdata = new FormData();
+      formdata.append("file", $("#file")[0].files[0]); //获取文件法二
+      this.$http
+        .post(
+          "api/Back/Import",
+          formdata
+          // qs.stringify({
+          //   params: formdata
+          // })
+          // ,
+          // {
+          //   headers: { "Content-Type": "application/octet-stream" }
+          // } //添加请求头
+        )
+        .then(
+          function(response) {
+            loadingDR.close();
+            var status = response.data.Status;
+            if (status === 1) {
+              this.getInfo();
+              this.$message({
+                showClose: true,
+                type: "success",
+                message: "导入成功"
+              });
+            } else if (status === -1) {
+              this.$message({
+                showClose: true,
+                type: "warning",
+                message: "请不要重复导入"
+              });
+            }
+          }.bind(this)
+        )
+        // 请求error
+        .catch(
+          function(error) {
+            loadingDR.close();
+            this.$notify.error({
+              title: "错误",
+              message: "错误：请检查网络"
+            });
+          }.bind(this)
+        );
+    },
     },
     mounted() {
       this.mainurl = mainurl;
@@ -301,6 +359,15 @@
   .block {
     text-align: center;
     padding: 20px 0;
+  }
+
+  #file {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 70px;
+    height: 40px;
+    opacity: 0;
   }
 
 </style>
