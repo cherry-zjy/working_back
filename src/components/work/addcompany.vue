@@ -49,6 +49,9 @@
           <el-form-item label="门店联系方式：" prop="WorkStore">
             <el-input v-model="editForm.WorkStore"></el-input>
           </el-form-item>
+          <el-form-item label="是否加急" prop="IsBusy">
+            <el-switch v-model="editForm.IsBusy"></el-switch>
+          </el-form-item>
 
           <p class="title">企业轮播图</p>
           <el-form-item label="厂区：" prop="cqimg">
@@ -573,6 +576,11 @@
                 }
                 rule = rule.substring(0, rule.length - 1)
               }
+              if (para.IsBusy == true) {
+                para.IsBusy = 1
+              }else{
+                 para.IsBusy = 0
+              }
               // 发保存请求
               this.$http
                 .post("api/Back/AddEnterprise",
@@ -609,6 +617,7 @@
                     Ruler: rule,
                     SubsidyType: para.SubsidyType,
                     Changework:para.Changework,
+                    IsBusy:para.IsBusy,
                   })
                 )
                 .then(

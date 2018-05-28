@@ -89,7 +89,7 @@
           .get("api/Back/wages", {
             params: {
               Token: getCookie("token"),
-              ID: window.location.href.split("id=")[1],
+              IDcard: window.location.href.split("id=")[1],
             }
           })
           .then(
@@ -97,7 +97,7 @@
               loading.close();
               var status = response.data.Status;
               if (status === 1) {
-                this.List = response.data.Result;
+                this.List = response.data.Result.list[0];
               } else if (status === 40001) {
                 this.$message({
                   showClose: true,
