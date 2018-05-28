@@ -189,7 +189,6 @@
               var para = Object.assign({}, this.editForm);
               // 将token传入参数中
               para.Token = getCookie("token");
-              para.ID = 
               para.Adress = this.$refs.map.locationMsg.address;
               para.Longitude = this.$refs.map.locationMsg.lnglat.split(",")[0];
               para.Latitude = this.$refs.map.locationMsg.lnglat.split(",")[1];
@@ -199,7 +198,7 @@
                   params: {
                     Image: para.Image,
                     Name: para.Name,
-                    Phone: para.Phone,
+                    Phone: this.editForm.Phone,
                     Adress: para.Adress,
                     Longitude: para.Longitude,
                     Latitude: para.Latitude,

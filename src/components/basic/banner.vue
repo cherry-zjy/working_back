@@ -2,7 +2,7 @@
   <div>
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>banner列表</el-breadcrumb-item>
+      <el-breadcrumb-item>今日推荐</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- table 内容 -->

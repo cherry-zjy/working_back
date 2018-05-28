@@ -82,7 +82,8 @@
           keyword: "",
           lnglat: "",
           address: ""
-        }
+        },
+        JJName:''
       };
     },
     computed: {
@@ -120,6 +121,7 @@
               var status = response.data.Status;
               if (status === 1) {
                 this.editForm = response.data.Result;
+                this.JJName = response.data.Result.JJName;
                 this.locationMsg.lnglat = this.editForm.Longitude + "," + this.editForm.Latitude;
                 this.locationMsg.address = this.editForm.Adress;
                 this.imageUrl = this.mainurl + this.editForm.Image;
@@ -246,7 +248,12 @@
               var para = Object.assign({}, this.editForm);
               // 将token传入参数中
               para.Token = getCookie("token");
-              para.ID = 
+              if (this.editForm.JJName == this.JJName) {
+               this.JJName = para.Phone
+              }else{
+                this.JJName = this.editForm.JJName
+              }
+              console.log(this.JJName)              
               para.Adress = this.$refs.map.locationMsg.address;
               para.Longitude = this.$refs.map.locationMsg.lnglat.split(",")[0];
               para.Latitude = this.$refs.map.locationMsg.lnglat.split(",")[1];
@@ -257,7 +264,7 @@
                     ID: window.location.href.split("id=")[1],
                     Image: para.Image,
                     Name: para.Name,
-                    Phone: para.JJName,
+                    Phone: this.JJName,
                     Adress: para.Adress,
                     Longitude: para.Longitude,
                     Latitude: para.Latitude,

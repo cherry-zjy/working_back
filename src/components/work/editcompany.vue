@@ -57,6 +57,9 @@
               <i class="el-icon-plus"></i>
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
+            <el-dialog :visible.sync="dialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
           </el-form-item>
 
           <el-form-item label="伙食：" prop="eatimg">
@@ -247,6 +250,9 @@
           Title: '',
           Content: '',
         },
+        //轮播图点击放大
+        dialogImageUrl: '',
+        dialogVisible: false,
         //全局表单验证
         listrules: {
           Name: [{
@@ -563,7 +569,8 @@
         }
       },
       handlePreview(file) {
-        console.log(file);
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
       },
       cqhandleAvatarSuccess(res, file) {
         this.addcqimg.push(res.Result[0])

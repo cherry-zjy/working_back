@@ -46,7 +46,7 @@
           <el-form-item label="企业规划（人）：" prop="EnterprisePeople">
             <el-input v-model="editForm.EnterprisePeople"></el-input>
           </el-form-item>
-          <el-form-item label="门店联系方式：">
+          <el-form-item label="门店联系方式：" prop="WorkStore">
             <el-input v-model="editForm.WorkStore"></el-input>
           </el-form-item>
 
@@ -57,6 +57,9 @@
             <i class="el-icon-plus"></i>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
           </el-form-item>
 
           <el-form-item label="吃饭：" prop="eatimg">
@@ -235,6 +238,9 @@
         eatimg: [],
         stayimg: [],
         wageimg: [],
+        //轮播图点击放大
+        dialogImageUrl: '',
+        dialogVisible: false,
         //新增工作图片
         addcqimg: [],
         addeatimg: [],
@@ -295,6 +301,11 @@
           EnterprisePeople: [{
             required: true,
             message: "请输入企业规模",
+            trigger: "blur"
+          }],
+          WorkStore: [{
+            required: true,
+            message: "请输入门店联系方式",
             trigger: "blur"
           }],
           Salary: [{
@@ -428,7 +439,8 @@
         }
       },
       handlePreview(file) {
-        console.log(file);
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
       },
       cqhandleAvatarSuccess(res, file) {
         this.addcqimg.push(res.Result[0])
