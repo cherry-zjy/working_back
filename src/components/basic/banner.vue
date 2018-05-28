@@ -37,7 +37,7 @@
         </el-form-item>
         <div class="btn">
           <el-button type="primary" class="centerbtn" @click="submitList('editForm')">确定</el-button>
-          <el-button type="primary" class="centerbtn" @click="back()">返回</el-button>
+          <el-button type="primary" class="centerbtn" @click="backlist()">返回</el-button>
         </div>
       </el-form>
     </el-col>
@@ -69,6 +69,10 @@
       };
     },
     methods: {
+      backlist(){
+        this.getInfo();
+        this.edit = false;
+      },
       getInfo() {
         const loading = this.$loading({
           lock: true,
@@ -271,10 +275,7 @@
         });
       },
     },
-    back(){
-      this.getInfo();
-      this.edit = false;
-    },
+    
     mounted() {
       this.mainurl = mainurl;
       this.getInfo();

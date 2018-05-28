@@ -1,4 +1,4 @@
-var mainurl = "http://192.168.1.125/Working/"
+var mainurl = "https://working.quanqiuyingcai.com/"
 
 function setCookie(name, value) {
 	var Days = 30;

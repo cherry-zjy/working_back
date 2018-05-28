@@ -394,6 +394,7 @@
       },
       //批量上传图片
       cqhandleRemove(file, fileList) {
+        console.log(file)
         //获取删除的图片地址，在addcqimg中对应删除
         let file1 = file.response.Result
         for (let i = 0; i < this.addcqimg.length; i++) {
@@ -500,12 +501,13 @@
       },
       // 保存
       submitList(formName) {
-        if (this.addcqimg.length >= 4 || this.addeatimg.length >= 4 || this.addstayimg.length >= 4 || this.addwageimg.length >= 4) {
+        if (this.addcqimg.length > 4 || this.addeatimg.length > 4 || this.addstayimg.length > 4 || this.addwageimg.length > 4) {
           this.$message({
             showClose: true,
             type: "warning",
             message: '企业轮播图最多只能上传4张哦'
           });
+          return;
         }
         this.$refs[formName].validate(valid => {
           if (valid) {
@@ -593,7 +595,8 @@
                     LiveImage: stay,
                     PayrollImage: wage,
                     Ruler: rule,
-                    SubsidyType: para.SubsidyType
+                    SubsidyType: para.SubsidyType,
+                    Changework:para.Changework,
                   })
                 )
                 .then(

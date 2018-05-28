@@ -498,34 +498,67 @@
       //批量上传图片
       cqhandleRemove(file, fileList) {
         //获取删除的图片地址，在addcqimg中对应删除
-        let file1 = file.response.Result
+        console.log(file)
+        let file1 = file.url
         for (let i = 0; i < this.addcqimg.length; i++) {
-          if(this.addcqimg[i] == file1){
+          if(this.mainurl+this.addcqimg[i] == file1){
             this.addcqimg.splice(i,1)
+          }
+        }
+        if(file.response.Status == 1){
+            let file2 = file.response.Result
+            for (let i = 0; i < this.addcqimg.length; i++) {
+            if(this.addcqimg[i] == file2){
+              this.addcqimg.splice(i,1)
+            }
           }
         }
       },
       eathandleRemove(file, fileList) {
-        let file1 = file.response.Result
+        let file1 = file.url
         for (let i = 0; i < this.addeatimg.length; i++) {
-          if(this.addeatimg[i] == file1){
+          if(this.mainurl+this.addeatimg[i] == file1){
             this.addeatimg.splice(i,1)
+          }
+        }
+        if(file.response.Status == 1){
+            let file2 = file.response.Result
+            for (let i = 0; i < this.addeatimg.length; i++) {
+            if(this.addeatimg[i] == file2){
+              this.addeatimg.splice(i,1)
+            }
           }
         }
       },
       stayhandleRemove(file, fileList) {
-        let file1 = file.response.Result
+        let file1 = file.url
         for (let i = 0; i < this.addstayimg.length; i++) {
-          if(this.addstayimg[i] == file1){
+          if(this.mainurl+this.addstayimg[i] == file1){
             this.addstayimg.splice(i,1)
+          }
+        }
+        if(file.response.Status == 1){
+            let file2 = file.response.Result
+            for (let i = 0; i < this.addstayimg.length; i++) {
+            if(this.addstayimg[i] == file2){
+              this.addstayimg.splice(i,1)
+            }
           }
         }
       },
       wagehandleRemove(file, fileList) {
-        let file1 = file.response.Result
+        let file1 = file.url
         for (let i = 0; i < this.addwageimg.length; i++) {
-          if(this.addwageimg[i] == file1){
+          if(this.mainurl+this.addwageimg[i] == file1){
             this.addwageimg.splice(i,1)
+          }
+        }
+        if(file.response.Status == 1){
+            let file2 = file.response.Result
+            for (let i = 0; i < this.addwageimg.length; i++) {
+            if(this.addwageimg[i] == file2){
+              this.addwageimg.splice(i,1)
+            }
           }
         }
       },
@@ -603,12 +636,13 @@
       },
       // 保存
       submitList(formName) {
-        if (this.addcqimg.length >= 4 || this.addeatimg.length >= 4 || this.addstayimg.length >= 4 || this.addwageimg.length >= 4) {
+        if (this.addcqimg.length > 4 || this.addeatimg.length > 4 || this.addstayimg.length > 4 || this.addwageimg.length > 4) {
           this.$message({
             showClose: true,
             type: "warning",
             message: '企业轮播图最多只能上传4张哦'
           });
+          return;
         }
         this.$refs[formName].validate(valid => {
           if (valid) {
@@ -741,7 +775,7 @@
                 // 请求error
                 .catch(
                   function (error) {
-                    loading.close();
+                    // loading.close();
                     //   this.$notify.error({
                     //     title: "错误",
                     //     message: "错误：请检查网络"
