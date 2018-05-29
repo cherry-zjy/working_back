@@ -27,6 +27,7 @@ var userdetail = resolve => require(['../components/user/userdetail.vue'], resol
 var experience = resolve => require(['../components/user/experience.vue'], resolve)  
 var wage = resolve => require(['../components/user/wage.vue'], resolve)  
 var agent = resolve => require(['../components/user/agent.vue'], resolve)  
+var wagelist = resolve => require(['../components/user/wagelist.vue'], resolve)  
 //提现管理
 var withdraw = resolve => require(['../components/withdraw/withdraw.vue'], resolve)  
 //平台管理
@@ -72,6 +73,7 @@ export default new Router({
         { path: '/user/experience/:id', component: experience, name: '工作经历' },
         { path: '/user/wage/:id', component: wage, name: '工资详情' },
         { path: '/agent', component: agent, name: '经理人列表' },
+        { path: '/wagelist', component: wagelist, name: '工资列表' },
         //提现管理
         { path: '/withdraw', component: withdraw, name: '提现列表' },        
         //平台管理

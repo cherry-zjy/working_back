@@ -36,7 +36,6 @@
           <el-button size="mini" type="primary" @click="setagent(scope.row.ID,scope.row.Agent)">设置经纪人</el-button>
           <el-button size="mini" type="warning" @click="detail(scope.row.ID)">用户详情</el-button>
           <el-button size="mini" type="success" @click="experience(scope.row.ID)">工作经历</el-button>
-          <el-button v-if="scope.row.IDcard !== ''" size="mini" type="info" @click="wage(scope.row.IDcard)">工资信息</el-button>
         </template>
       </el-table-column>
     </el-table>

@@ -87,6 +87,9 @@
             "title": "普通用户列表",
             "urlf": "user.html",
           }, {
+            "title": "工资列表",
+            "urlf": "wagelist.html",
+          }, {
             "title": "经纪人列表",
             "urlf": "agent.html",
           }]
