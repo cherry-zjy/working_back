@@ -51,7 +51,7 @@
       return {
         List: [], //管理员列表
         pageIndex: 1,
-        pageSize: 2,
+        pageSize: 12,
         pageCount: 1,
         // 搜索关键字
         filters: {

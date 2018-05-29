@@ -2,7 +2,7 @@
   <div>
     <el-breadcrumb separator="|" class="crumb">
       <el-breadcrumb-item :to="{ path: '/' }">后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>普通用户列表</el-breadcrumb-item>
+      <el-breadcrumb-item>工资列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!--检索条-->
     <el-col class="toolbar" style="padding-top: 15px;">
@@ -12,6 +12,10 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
+        </el-form-item>
+        <el-form-item style="float:right;">
+          <el-button type="primary">导入工资条</el-button>
+          <input id="file" type="file" @change="FileIn()" />
         </el-form-item>
       </el-form>
     </el-col>
@@ -56,19 +60,6 @@
       </el-pagination>
     </div>
 
-    <!-- 模态框 -->
-    <el-dialog title="设置经纪人" :visible.sync="dialogFormVisible" width="30%">
-      <el-form :model="phoneList" :rules="agentrules" ref="phoneList" label-width="100px" class="demo-ruleForm">
-        <el-select v-model="phoneList.Phone" placeholder="请选择经纪人">
-          <el-option v-for="item in phoneList" :key="item.Phone" :label="item.Name" :value="item.Phone"></el-option>
-        </el-select>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="agent('phoneList')">确 定</el-button>
-      </div>
-    </el-dialog>
-
   </div>
 </template>
 <script>
@@ -83,16 +74,7 @@
         filters: {
           Query: "",
         },
-        dialogFormVisible: false,
         mainurl: '',
-        phoneList: {},
-        agentrules: {
-          Phone: [{
-            required: true,
-            message: '请选择经纪人',
-            trigger: 'change'
-          }],
-        }
       }
     },
     methods: {
@@ -151,7 +133,60 @@
             }.bind(this)
           );
       },
-      handleDel(id){
+      //导入工资条
+      FileIn() {
+        const loadingDR = this.$loading({
+          lock: true,
+          text: "Loading",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        var formdata = new FormData();
+        formdata.append("file", $("#file")[0].files[0]); //获取文件法二
+        this.$http
+          .post(
+            "api/Back/Import",
+            formdata
+            // qs.stringify({
+            //   params: formdata
+            // })
+            // ,
+            // {
+            //   headers: { "Content-Type": "application/octet-stream" }
+            // } //添加请求头
+          )
+          .then(
+            function (response) {
+              loadingDR.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.getInfo();
+                this.$message({
+                  showClose: true,
+                  type: "success",
+                  message: "导入成功"
+                });
+              } else if (status === -1) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: "请不要重复导入"
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loadingDR.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
+      },
+      handleDel(id) {
         this.$confirm('确认删除?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -219,6 +254,10 @@
           });
         });
       },
+      handleCurrentChange(val) {
+        this.pageIndex = val;
+        this.getInfo();
+      },
     },
     mounted() {
       this.mainurl = mainurl;
@@ -238,15 +277,6 @@
   .block {
     text-align: center;
     padding: 20px 0;
-  }
-
-  #file {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 70px;
-    height: 40px;
-    opacity: 0;
   }
 
 </style>
