@@ -13,7 +13,6 @@
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
         </el-form-item>
-        <el-button type="primary" @click="handleAdd()" style="float:right;">新增</el-button>
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -60,8 +59,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button v-if="edit" type="primary" @click="submitForm('editlist')">确 定</el-button>
-        <el-button v-if="!edit" type="primary" @click="addsubmitForm('editlist')">添加</el-button>
+        <el-button type="primary" @click="submitForm('editlist')">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -104,7 +102,6 @@
             trigger: 'blur'
           }, ],
         },
-        edit:'',
       }
     },
     methods: {
@@ -170,7 +167,6 @@
         this.editlist = this.List[index];
         console.log(this.editlist)
         this.dialogFormVisible = true;
-        this.edit = true;
       },
       //修改信息
       submitForm(formName) {
@@ -187,81 +183,6 @@
               params: {
                 Token: getCookie("token"),
                 ID: this.editlist.ID,
-                Name: this.editlist.Name,
-                Phone: this.editlist.Phone,
-                Vixin: this.editlist.Vixin,
-                QQ: this.editlist.QQ,
-              }
-            })
-            .then(
-              function (response) {
-                loading.close();
-                var status = response.data.Status;
-                if (status === 1) {
-                  this.$message({
-                    showClose: true,
-                    type: "success",
-                    message: response.data.Result
-                  });
-                  this.getInfo()
-                } else if (status === 40001) {
-                  this.$message({
-                    showClose: true,
-                    type: "warning",
-                    message: response.data.Result
-                  });
-                  setTimeout(() => {
-                    this.$router.push({
-                      path: "/login"
-                    });
-                  }, 1500);
-                } else {
-                  loading.close();
-                  this.$message({
-                    showClose: true,
-                    type: "warning",
-                    message: response.data.Result
-                  });
-                }
-              }.bind(this)
-            )
-            // 请求error
-            .catch(
-              function (error) {
-                loading.close();
-                this.$notify.error({
-                  title: "错误",
-                  message: "错误：请检查网络"
-                });
-              }.bind(this)
-            );
-            this.dialogFormVisible = false;
-            this.editlist = [];
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      //新增
-      handleAdd(){
-        this.editlist = [];
-        this.dialogFormVisible = true;
-        this.edit = false;
-      },
-      addsubmitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            const loading = this.$loading({
-                lock: true,
-                text: "Loading",
-                spinner: "el-icon-loading",
-                background: "rgba(0, 0, 0, 0.7)"
-              });
-            this.$http
-            .get("api/Back/AddAgent", {
-              params: {
-                Token: getCookie("token"),
                 Name: this.editlist.Name,
                 Phone: this.editlist.Phone,
                 Vixin: this.editlist.Vixin,

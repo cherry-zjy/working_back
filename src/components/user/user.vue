@@ -13,7 +13,7 @@
         <el-form-item>
           <el-button type="primary" @click="getUsers()">查询</el-button>
         </el-form-item>
-        
+
       </el-form>
     </el-col>
     <!-- table 内容 -->
@@ -33,6 +33,7 @@
           <el-button size="mini" type="primary" @click="setagent(scope.row.ID,scope.row.Agent)">设置经纪人</el-button>
           <el-button size="mini" type="warning" @click="detail(scope.row.ID)">用户详情</el-button>
           <el-button size="mini" type="success" @click="experience(scope.row.ID)">工作经历</el-button>
+          <el-button size="mini" type="danger" @click="addagent(scope.row.ID)">升级为经纪人</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -196,7 +197,7 @@
           );
       },
       //设置经纪人
-      setagent(id,agent) {
+      setagent(id, agent) {
         this.phoneList.Phone = agent;
         this.dialogFormVisible = true;
         this.phoneList.ID = id
@@ -265,24 +266,80 @@
           }
         })
       },
-      
+
       //用户详情
-      detail(id){
+      detail(id) {
         this.$router.push("/user/userdetail/id=" + id);
       },
       //工作经历
-      experience(id){
+      experience(id) {
         this.$router.push("/user/experience/id=" + id);
       },
       //工资详情
-      wage(id){
+      wage(id) {
         this.$router.push("/user/wage/id=" + id);
+      },
+      addagent(id) {
+        const loading = this.$loading({
+              lock: true,
+              text: "Loading",
+              spinner: "el-icon-loading",
+              background: "rgba(0, 0, 0, 0.7)"
+            });
+        this.$http
+          .get("api/Back/AddAgent", {
+            params: {
+              Token: getCookie("token"),
+              ID: id,
+            }
+          })
+          .then(
+            function (response) {
+              loading.close();
+              var status = response.data.Status;
+              if (status === 1) {
+                this.$message({
+                  showClose: true,
+                  type: "success",
+                  message: response.data.Result
+                });
+                this.getInfo()
+              } else if (status === 40001) {
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/login"
+                  });
+                }, 1500);
+              } else {
+                loading.close();
+                this.$message({
+                  showClose: true,
+                  type: "warning",
+                  message: response.data.Result
+                });
+              }
+            }.bind(this)
+          )
+          // 请求error
+          .catch(
+            function (error) {
+              loading.close();
+              this.$notify.error({
+                title: "错误",
+                message: "错误：请检查网络"
+              });
+            }.bind(this)
+          );
       },
       handleCurrentChange(val) {
         this.pageIndex = val;
         this.getInfo();
       },
-      
     },
     mounted() {
       this.mainurl = mainurl;
