@@ -264,21 +264,27 @@
             trigger: 'blur'
           }],
           dynamicTags: [{
+            required: true,
             validator: checktag
           }],
           Logo: [{
+            required: true,
             validator: checkLogo
           }],
           cqimg: [{
+            required: true,
             validator: checkcqimg
           }],
           eatimg: [{
+            required: true,
             validator: checkeatimg
           }],
           stayimg: [{
+            required: true,
             validator: checkstayimg
           }],
           wageimg: [{
+            required: true,
             validator: checkwageimg
           }],
           Subsidy: [{

@@ -47,7 +47,7 @@
     <!-- 模态框 -->
     <el-dialog title="设置经纪人" :visible.sync="dialogFormVisible" width="30%">
       <el-form :model="phoneList" :rules="agentrules" ref="phoneList" label-width="100px" class="demo-ruleForm">
-        <el-select v-model="phoneList.Phone" placeholder="请选择经纪人">
+        <el-select v-model="agentphone" placeholder="请选择经纪人">
           <el-option v-for="item in phoneList" :key="item.Phone" :label="item.Name" :value="item.Phone"></el-option>
         </el-select>
       </el-form>
@@ -80,7 +80,8 @@
             message: '请选择经纪人',
             trigger: 'change'
           }],
-        }
+        },
+        agentphone:''
       }
     },
     methods: {
@@ -198,7 +199,7 @@
       },
       //设置经纪人
       setagent(id, agent) {
-        this.phoneList.Phone = agent;
+        this.agentphone = agent;
         this.dialogFormVisible = true;
         this.phoneList.ID = id
       },
@@ -217,7 +218,7 @@
                 params: {
                   Token: getCookie("token"),
                   ID: this.phoneList.ID,
-                  Phone: this.phoneList.Phone
+                  Phone: this.agentphone
                 }
               })
               .then(
