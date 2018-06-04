@@ -30,7 +30,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="setagent(scope.row.ID,scope.row.Agent)">设置经纪人</el-button>
+          <el-button size="mini" type="primary" @click="setagent(scope.row.ID,scope.row.Upphone)">设置经纪人</el-button>
           <el-button size="mini" type="warning" @click="detail(scope.row.ID)">用户详情</el-button>
           <el-button size="mini" type="success" @click="experience(scope.row.ID)">工作经历</el-button>
           <el-button size="mini" type="danger" @click="addagent(scope.row.ID)">升级为经纪人</el-button>
