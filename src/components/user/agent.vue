@@ -45,9 +45,6 @@
         <el-form-item label="学姐昵称" prop="Name">
           <el-input v-model="editlist.Name" style="width:100%"></el-input>
         </el-form-item>
-        <el-form-item label="联系号码" prop="Phone">
-          <el-input v-model="editlist.Phone" style="width:100%"></el-input>
-        </el-form-item>
         <el-form-item label="QQ" prop="QQ">
           <el-input v-model="editlist.QQ" style="width:100%"></el-input>
         </el-form-item>
@@ -84,11 +81,6 @@
           Name: [{
             required: true,
             message: '请输入昵称',
-            trigger: 'blur'
-          }, ],
-          Phone: [{
-            required: true,
-            message: '请输入联系号码',
             trigger: 'blur'
           }, ],
           QQ: [{
@@ -184,7 +176,7 @@
                 Token: getCookie("token"),
                 ID: this.editlist.ID,
                 Name: this.editlist.Name,
-                Phone: this.editlist.Phone,
+                // Phone: this.editlist.Phone,
                 Vixin: this.editlist.Vixin,
                 QQ: this.editlist.QQ,
               }

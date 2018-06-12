@@ -95,28 +95,28 @@
             <el-input v-model="editForm.Salary"></el-input>
           </el-form-item>
           <el-form-item label="住宿：" prop="SSStay">
-            <el-input v-model="editForm.SSStay" type="textarea"></el-input>
+            <el-input v-model="editForm.SSStay" type="textarea" rows="5"></el-input>
           </el-form-item>
           <el-form-item label="底薪（元）：">
             <el-input v-model="editForm.BasicSalary"></el-input>
           </el-form-item>
           <el-form-item label="合同说明：" prop="Contract">
-            <el-input v-model="editForm.Contract" type="textarea"></el-input>
+            <el-input v-model="editForm.Contract" type="textarea" rows="5"></el-input>
           </el-form-item>
           <el-form-item label="薪资结构：">
-            <el-input v-model="editForm.SalaryExplain" type="textarea"></el-input>
+            <el-input v-model="editForm.SalaryExplain" type="textarea" rows="5"></el-input>
           </el-form-item>
           <el-form-item label="工资发放：" prop="PayMoney">
-            <el-input v-model="editForm.PayMoney" type="textarea"></el-input>
+            <el-input v-model="editForm.PayMoney" type="textarea" rows="5"></el-input>
           </el-form-item>
           <el-form-item label="伙食：" prop="SSEat">
-            <el-input v-model="editForm.SSEat" type="textarea"></el-input>
+            <el-input v-model="editForm.SSEat" type="textarea" rows="5"></el-input>
           </el-form-item>
           <el-form-item label="保险说明：">
-            <el-input v-model="editForm.Insurance" type="textarea"></el-input>
+            <el-input v-model="editForm.Insurance" type="textarea" rows="5"></el-input>
           </el-form-item>
           <el-form-item label="温馨提示：">
-            <el-input v-model="editForm.Prompt" type="textarea"></el-input>
+            <el-input v-model="editForm.Prompt" type="textarea" rows="5"></el-input>
           </el-form-item>
           <p class="title" style="width:50%">录用条件
             <el-button size="mini" type="danger" @click="dialogFormVisible = true" style="float:right">+</el-button>
@@ -127,7 +127,7 @@
             </el-table-column>
             <el-table-column prop="Content" width="180" label="内容">
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="120">
+            <el-table-column label="操作" width="120">
               <template slot-scope="scope">
                 <el-button @click.native.prevent="deleteRow(scope.$index, WorkRuler)" type="text" size="small">
                   移除
@@ -147,7 +147,8 @@
           </el-form-item>
           <p class="title">企业说明</p>
           <el-form-item label="企业说明：">
-            <el-input v-model="editForm.EnterpriseExplain" type="textarea"></el-input>
+            <el-input v-model="editForm.EnterpriseExplain" type="textarea" rows="8"></el-input>
+            <!-- <el-input type="textarea" v-model="editForm.EnterpriseExplain"></el-input> -->
           </el-form-item>
           <el-form-item label="企业地址：">
             <el-input v-model="editForm.Adress"></el-input>
