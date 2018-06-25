@@ -11,7 +11,7 @@
           <el-input v-model="filters.Query" placeholder="关键字"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getUsers()">查询</el-button>
+          <el-button type="primary" @click="getInfo()">查询</el-button>
         </el-form-item>
       </el-form>
     </el-col>

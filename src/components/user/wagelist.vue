@@ -11,7 +11,7 @@
           <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getUsers()">查询</el-button>
+          <el-button type="primary" @click="getInfo()">查询</el-button>
         </el-form-item>
         <el-form-item style="float:right;">
           <el-button type="primary">导入工资条</el-button>
@@ -72,7 +72,7 @@
         List: [], //管理员角色列表
         // 搜索关键字
         filters: {
-          Query: "",
+          keyword: "",
         },
         mainurl: '',
       }
@@ -90,7 +90,7 @@
             params: {
               pageIndex: this.pageIndex,
               pageSize: this.pageSize,
-              Name: (this.filters.Query == '') ? '-1' : this.filters.Query,
+              Name: (this.filters.keyword == '') ? '-1' : this.filters.keyword,
               Token: getCookie("token"),
             }
           })

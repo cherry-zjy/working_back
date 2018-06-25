@@ -11,7 +11,7 @@
           <el-input v-model="filters.keyword" placeholder="关键字" prefix-icon="el-icon-search"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getUsers()">查询</el-button>
+          <el-button type="primary" @click="getInfo()">查询</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -72,7 +72,7 @@
         List: [], //管理员角色列表
         // 搜索关键字
         filters: {
-          Query: ""
+          keyword: ""
         },
         mainurl:'',
         dialogFormVisible:false,
@@ -109,7 +109,7 @@
             params: {
               pageIndex: this.pageIndex,
               pageSize: this.pageSize,
-              Query:(this.filters.Query == '') ? '-1' : this.filters.Query,
+              Query:(this.filters.keyword == '') ? '-1' : this.filters.keyword,
               Token: getCookie("token"),
               Type:1
             }

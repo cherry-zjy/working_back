@@ -87,7 +87,7 @@
         List: [], //管理员角色列表
         // 搜索关键字
         filters: {
-          Query: "",
+          keyword: "",
           StartTime: "",
           EndTime: "",
           Type:-1
@@ -130,7 +130,7 @@
             params: {
               pageIndex: this.pageIndex,
               pageSize: this.pageSize,
-              Query:(this.filters.Query == '') ? '-1' : this.filters.Query,
+              Query:(this.filters.keyword == '') ? '-1' : this.filters.keyword,
               Token: getCookie("token"),
               StartTime:(this.filters.StartTime == '') ? '-1' : this.filters.StartTime,
               EndTime:(this.filters.EndTime == '') ? '-1' : this.filters.EndTime,

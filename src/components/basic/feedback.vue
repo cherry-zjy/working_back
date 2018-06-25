@@ -7,10 +7,6 @@
 
     <!-- table 内容 -->
     <el-table :data="List" style="width: 100%" :border='true'>
-      <el-table-column label="用户名" prop="Name">
-      </el-table-column>
-      <el-table-column label="联系电话" prop="Phone">
-      </el-table-column>
       <el-table-column label="反馈时间" prop="Time" :formatter="Time">
       </el-table-column>
       <el-table-column label="反馈内容" prop="Content">
