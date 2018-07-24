@@ -107,6 +107,9 @@
           },{
             "title": "意见反馈列表",
             "urlf": "feedback.html",
+          },{
+            "title": "评论列表",
+            "urlf": "comment.html",
           }]
         },],
         userName: "",

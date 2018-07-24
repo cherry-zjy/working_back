@@ -33,6 +33,7 @@ var withdraw = resolve => require(['../components/withdraw/withdraw.vue'], resol
 //平台管理
 var banner = resolve => require(['../components/basic/banner.vue'], resolve)  
 var feedback = resolve => require(['../components/basic/feedback.vue'], resolve)  
+var comment = resolve => require(['../components/basic/comment.vue'], resolve)  
 
 // 懒加载方式，当路由被访问的时候才加载对应组件
 Vue.use(Router)
@@ -79,6 +80,7 @@ export default new Router({
         //平台管理
         { path: '/banner', component: banner, name: 'banner列表' },                
         { path: '/feedback', component: feedback, name: '意见反馈列表' },                
+        { path: '/comment', component: comment, name: '评论列表' },                
       ]
     },
   ]
